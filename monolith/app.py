@@ -4,18 +4,50 @@ from flask_cors import CORS
 import os
 from os import environ
 import requests
-
-app = Flask(__name__)
-CORS(app)
+from flask_sqlalchemy import SQLAlchemy
+import logging
 
 # for API Keys
-# from dotenv import load_dotenv
-# load_dotenv('spm.env')
+from dotenv import load_dotenv
+load_dotenv('spm.env')
+user = os.getenv('user')
+password = os.getenv('password')
 
-@app.route("/")
-def main():
-    return
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{user}:{password}@spm-database.cfr5k6rgnsdu.ap-southeast-2.rds.amazonaws.com:3306/SPM_fiesta'
+db = SQLAlchemy(app)
+CORS(app)
+
+class Staff(db.Model):
+    __tablename__ = 'Staff'
+    Staff_ID = db.Column(db.Integer, primary_key=True)
+    Staff_FName = db.Column(db.String(255))
+    Staff_LName = db.Column(db.String(255))
+    Dept = db.Column(db.String(255))
+    Country = db.Column(db.String(255))
+    Email = db.Column(db.String(255))
+    Role = db.Column(db.String(255))
+
+@app.route("/get_staff_data", methods=["GET"])
+def get_staff_data():
+    try:
+        staff_data = Staff.query.all()
+        staff_list = []
+        for staff in staff_data:
+            staff_list.append({
+                "Staff_ID": staff.Staff_ID,
+                "Staff_FName": staff.Staff_FName,
+                "Staff_LName": staff.Staff_LName,
+                "Dept": staff.Dept,
+                "Country": staff.Country,
+                "Email": staff.Email,
+                "Role": staff.Role,
+            })
+        app.logger.info(staff_list)
+        return jsonify(staff_list)
+    except Exception as e:
+        return jsonify({"error": str(e)})
 
 if __name__ == "__main__":
     print("This is flask " + os.path.basename(__file__) + " for the SPM monolith...")
-    app.run(host="0.0.0.0", port=8000, debug=True)
+    app.run(host="127.0.0.1", port=8000, debug=True)

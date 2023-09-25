@@ -3,7 +3,7 @@
       <div class="header">
         <h1 class="title">Job Listing Management</h1>
 
-         <!-- Create Job Listing button -->
+        <!-- Create Job Listing button -->
         <button @click="showCreateJobForm" class="create-button">Create a New Job Listing</button>
       </div>
       
@@ -114,4 +114,3 @@
     font-weight: bold;
   }
   </style>
-  
