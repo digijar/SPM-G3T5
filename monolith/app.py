@@ -48,6 +48,30 @@ def get_staff_data():
     except Exception as e:
         return jsonify({"error": str(e)})
 
+@app.route("/edit_staff_data", methods=["PUT"])
+def edit_staff_data():
+    try:
+        staff_data = request.json  # Assuming the updated staff data is sent in the request body as JSON
+        staff_id = staff_data.get("Staff_ID")
+
+        # Find the staff record to update by Staff_ID
+        staff = Staff.query.get(staff_id)
+        if staff:
+            # Update staff record with the new data
+            staff.Staff_FName = staff_data.get("Staff_FName")
+            staff.Staff_LName = staff_data.get("Staff_LName")
+            staff.Dept = staff_data.get("Dept")
+            staff.Country = staff_data.get("Country")
+            staff.Email = staff_data.get("Email")
+            staff.Role = staff_data.get("Role")
+
+            db.session.commit()
+            return jsonify({"message": "Staff data updated successfully"})
+        else:
+            return jsonify({"error": "Staff not found"})
+    except Exception as e:
+        return jsonify({"error": str(e)})
+
 if __name__ == "__main__":
     print("This is flask " + os.path.basename(__file__) + " for the SPM monolith...")
     app.run(host="127.0.0.1", port=8000, debug=True)
