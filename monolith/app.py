@@ -18,6 +18,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{user}:{password}@spm-
 db = SQLAlchemy(app)
 CORS(app)
 
+# Staff
 class Staff(db.Model):
     __tablename__ = 'Staff'
     Staff_ID = db.Column(db.Integer, primary_key=True)
@@ -69,6 +70,48 @@ def edit_staff_data():
             return jsonify({"message": "Staff data updated successfully"})
         else:
             return jsonify({"error": "Staff not found"})
+    except Exception as e:
+        return jsonify({"error": str(e)})
+
+# Role
+class Role(db.Model):
+    __tablename__ = 'Role'
+    Role_Name = db.Column(db.String(255), primary_key=True)
+    Role_Desc = db.Column(db.String(255))
+
+@app.route("/get_role_data", methods=["GET"])
+def get_role_data():
+    try:
+        role_data = Role.query.all()
+        role_list = []
+        for role in role_data:
+            role_list.append({
+                "Role_Name": role.Role_Name,
+                "Role_Desc": role.Role_Desc,
+            })
+        app.logger.info(role_list)
+        return jsonify(role_list)
+    except Exception as e:
+        return jsonify({"error": str(e)})
+
+# Skill
+class Skill(db.Model):
+    __tablename__ = 'Skill'
+    Skill_Name = db.Column(db.String(255), primary_key=True)
+    Skill_Desc = db.Column(db.String(255))
+
+@app.route("/get_skill_data", methods=["GET"])
+def get_skill_data():
+    try:
+        skill_data = Skill.query.all()
+        skill_list = []
+        for skill in skill_data:
+            skill_list.append({
+                "Skill_Name": skill.Skill_Name,
+                "Skill_Desc": skill.Skill_Desc,
+            })
+        app.logger.info(skill_list)
+        return jsonify(skill_list)
     except Exception as e:
         return jsonify({"error": str(e)})
 
