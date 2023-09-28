@@ -115,6 +115,29 @@ def get_skill_data():
     except Exception as e:
         return jsonify({"error": str(e)})
 
+# Role_Skill
+class Role_Skill(db.Model):
+    __tablename__ = 'Role_Skill'
+    Role_Skill_ID = db.Column(db.String(255), primary_key=True)
+    Role_Name = db.Column(db.String(255), db.ForeignKey('Role.Role_Name'))
+    Skill_Name = db.Column(db.String(255), db.ForeignKey('Skill.Skill_Name'))
+
+@app.route("/get_roleskill_data", methods=["GET"])
+def get_roleSkill_data():
+    try:
+        roleSkill_data = Role_Skill.query.all()
+        roleSkill_list = []
+        for roleSkill in roleSkill_data:
+            roleSkill_list.append({
+                "Role_Skill_ID": roleSkill.Role_Skill_ID,
+                "Role_Name": roleSkill.Role_Name,
+                "Skill_Name": roleSkill.Skill_Name,
+            })
+        app.logger.info(roleSkill_list)
+        return jsonify(roleSkill_list)
+    except Exception as e:
+        return jsonify({"error": str(e)})
+
 if __name__ == "__main__":
     print("This is flask " + os.path.basename(__file__) + " for the SPM monolith...")
     app.run(host="127.0.0.1", port=8000, debug=True)
