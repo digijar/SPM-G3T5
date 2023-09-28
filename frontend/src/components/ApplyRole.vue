@@ -30,26 +30,47 @@
               <td>
                 <button class="btn btn-success">Apply</button>
                 <br>
-                <button class="btn btn-info">More Details</button>
+                <button class="btn btn-info" @click="openModal(role)">More Details</button>
               </td>
             </tr>
           </tbody>
         </table>
       </div>
     </div>
+
+    <RoleDetailModal
+      :showModal="modalData.showModal"
+      :roleName="modalData.roleName"
+      :roleDescription="modalData.roleDescription"
+      :skillName="modalData.skillName"
+      :skillDescription="modalData.skillDescription"
+      @close="modalData.showModal = false"
+    />
+
   </template>
   
   <script>
   import axios from 'axios';
+  import RoleDetailModal from './RoleDetailModal.vue';
 
   export default {
+    components: {
+      RoleDetailModal
+    },
+
     data() {
       return {
         roleData: [],
         skillData: [],
         roleSkillData: [],
         searchQuery: '',
-        selectedRole: null,
+        modalData: {
+          showModal: false,
+          roleName: '',
+          roleDescription: '',
+          skillName: '',
+          skillDescription: '',
+          },
       };
     },
 
@@ -119,6 +140,14 @@
               }
             }
             return '';
+          },
+
+          openModal(role) {
+            this.modalData.showModal = true;
+            this.modalData.roleName = role.Role_Name;
+            this.modalData.roleDescription = role.Role_Desc;
+            this.modalData.skillName = this.getSkillName(role.Role_Name);
+            this.modalData.skillDescription = this.getSkillDescription(role.Role_Name);
           },
     },
 
