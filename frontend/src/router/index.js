@@ -4,6 +4,7 @@ import HRStaffView from '../views/HRStaffView.vue'
 import RegStaffView from '../views/RegStaffView.vue'
 import TestDBView from '../views/TestDBView.vue'
 import newjoblistView from '../views/newjoblistView.vue'
+import HRApplicationsView from '../views/HRApplicationsView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
