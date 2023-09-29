@@ -33,6 +33,11 @@ const router = createRouter({
       name: 'newjoblisting',
       component: newjoblistView
     },
+    {
+      path: '/hrstaff/application',
+      name: 'hrstaffapplications',
+      component: HRApplicationsView
+    }
   ]
 })
 
