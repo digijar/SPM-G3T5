@@ -1,6 +1,6 @@
 <script setup>
 // import TheWelcome from '../components/TheWelcome.vue'
-import TopNav from '../components/TopNavHR.vue'
+import TopNavHR from '../components/TopNavHR.vue'
 import RoleManage from '../components/RoleManage.vue'
 // import SkillsFilter from '../components/SkillsFilter.vue'
 import RoleDisplay from '../components/RoleDisplay.vue'
@@ -10,8 +10,8 @@ import RoleDisplay from '../components/RoleDisplay.vue'
     <div>
         <TopNavHR></TopNavHR>
         <!-- <TheWelcome></TheWelcome> -->
-        <RoleManage></RoleManage>
+        <!-- <RoleManage></RoleManage> -->
         <!-- <SkillsFilter></SkillsFilter> -->
-        <RoleDisplay></RoleDisplay>
+        <!-- <RoleDisplay></RoleDisplay> -->
     </div>
 </template>

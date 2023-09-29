@@ -35,7 +35,7 @@ const router = createRouter({
       component: newjoblistView
     },
     {
-      path: '/hrstaff/application',
+      path: '/hrstaff/applications',
       name: 'hrstaffapplications',
       component: HRApplicationsView
     }
