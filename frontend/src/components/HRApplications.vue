@@ -11,11 +11,11 @@
       <table class="job-listing-table">
         <thead>
           <tr>
-            <th>Application ID</th>
-            <th>Role Name</th>
-            <th>Staff Name</th>
-            <th>Department</th>
-            <th>Skills Match Percentage</th>
+            <th class="text-center">Application ID</th>
+            <th class="text-center">Role Name</th>
+            <th class="text-center">Staff Name</th>
+            <th class="text-center">Department</th>
+            <th class="text-center">Skills Match Percentage</th>
           </tr>
         </thead>
         <tbody>
