@@ -14,22 +14,38 @@
             <th>Application ID</th>
             <th>Role Name</th>
             <th>Staff Name</th>
-            <th>Current Role</th>
+            <th>Department</th>
             <th>Skills Match Percentage</th>
           </tr>
         </thead>
         <tbody>
           <!-- Loop through applications data and display it -->
-          <tr v-for="(application, index) in applications" :key="application.Application_ID">
+          <tr v-for="(application, index) in applications" :key="application.Application_ID" @click="showPopup(application)">
             <td>{{ application.Application_ID }}</td>
             <td>{{ application.Role_Name }}</td>
             <td>{{ application.Staff_Name }}</td>
             <td>{{ application.Current_Dept }}</td>
-            <td>{{ application.Skills_Match_Percentage }}</td>
+            <td>{{ application.Skills_Match_Percentage }}%</td>
           </tr>
         </tbody>
       </table>
     </div>
+
+    <!-- Popup container -->
+    <div class="popup-container" v-if="selectedApplication">
+      <div class="popup card">
+        <div class="card-body">
+          <h4 class="card-title"> Job Application for {{ selectedApplication.Role_Name }} </h4>
+          <p class="card-text">Application ID: {{ selectedApplication.Application_ID }}</p>
+          <p class="card-text">Staff Name: {{ selectedApplication.Staff_Name }}</p>
+          <p class="card-text">Department: {{ selectedApplication.Current_Dept }}</p>
+          <p class="card-text">Skills Match Percentage: {{ selectedApplication.Skills_Match_Percentage }}%</p>
+          
+          <button class="btn btn-primary" @click="hidePopup">Close</button>
+        </div>
+      </div>
+    </div>
+    
   </div>
 </template>
 
@@ -40,6 +56,7 @@ export default {
   data() {
     return {
       applications: [],
+      selectedApplication: null,
     };
   },
 
@@ -57,6 +74,16 @@ export default {
         .catch((error) => {
           console.error(error);
         });
+    },
+
+    showPopup(application) {
+      this.selectedApplication = application;
+      $('#exampleModalCenter').modal('show');
+    },
+
+    hidePopup() {
+      this.selectedApplication = null;
+      $('#exampleModalCenter').modal('hide');
     },
   },
 };
@@ -100,5 +127,38 @@ export default {
 .job-listing-table th {
   background-color: #f2f2f2;
   font-weight: bold;
+}
+
+.popup-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.popup {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  max-width: 400px;
+  text-align: center;
+}
+
+.popup h2 {
+  margin-top: 0;
+}
+
+.popup p {
+  margin-bottom: 10px;
+}
+
+.popup button {
+  padding: 5px 10px;
 }
 </style>
