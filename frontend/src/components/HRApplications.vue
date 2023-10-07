@@ -20,16 +20,16 @@
         </thead>
         <tbody>
           <!-- Loop through applications data and display it -->
-          <tr v-for="(application, index) in applications" :key="application.Application_ID" @click="showPopup(application)">
-            <td>{{ application.Application_ID }}</td>
-            <td>{{ application.Role_Name }}</td>
-            <td>{{ application.Staff_Name }}</td>
-            <td>{{ application.Current_Dept }}</td>
-            <td>{{ application.Skills_Match_Percentage }}%</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+                <tr v-for="(application, index) in applications" :key="application.Application_ID" @click="showPopup(application)">
+                  <td class="text-center">{{ application.Application_ID }}</td>
+                  <td class="text-center">{{ application.Role_Name }}</td>
+                  <td class="text-center">{{ application.Staff_Name }}</td>
+                  <td class="text-center">{{ application.Current_Dept }}</td>
+                  <td class="text-center">{{ application.Skills_Match_Percentage }}%</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
 
     <!-- Popup container -->
     <div class="popup-container" v-if="selectedApplication">
