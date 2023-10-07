@@ -138,6 +138,34 @@ def get_roleSkill_data():
     except Exception as e:
         return jsonify({"error": str(e)})
 
+# Applications
+class Applications(db.Model):
+    __tablename__ = 'Applications'
+    Application_ID = db.Column(db.Integer, primary_key=True)
+    Role_Name = db.Column(db.String(255))
+    Staff_Name = db.Column(db.String(255))
+    Current_Dept = db.Column(db.String(255))
+    Skills_Match_Percentage = db.Column(db.Numeric(5, 2))
+    
+# Get Applications
+@app.route("/get_applications_data", methods=["GET"])
+def get_applications_data():
+    try:
+        applications_data = Applications.query.all()
+        applications_list = []
+        for application in applications_data:
+            applications_list.append({
+                "Application_ID": application.Application_ID,
+                "Role_Name": application.Role_Name,
+                "Staff_Name": application.Staff_Name,
+                "Current_Dept": application.Current_Dept,
+                "Skills_Match_Percentage": application.Skills_Match_Percentage,
+            })
+        app.logger.info(applications_list)
+        return jsonify(applications_list)
+    except Exception as e:
+        return jsonify({"error": str(e)})
+    
 if __name__ == "__main__":
     print("This is flask " + os.path.basename(__file__) + " for the SPM monolith...")
     app.run(host="127.0.0.1", port=8000, debug=True)
