@@ -125,11 +125,15 @@ class Role_Skill(db.Model):
 @app.route("/get_roleskill_data", methods=["GET"])
 def get_roleSkill_data():
     try:
-        roleSkill_data = Role_Skill.query.all()
+        # roleSkill_data = Role_Skill.query.all()
+        roleSkill_data = Role_Skill.query.with_entities(
+            Role_Skill.Role_Name,
+            Role_Skill.Skill_Name
+            ).all()
         roleSkill_list = []
         for roleSkill in roleSkill_data:
             roleSkill_list.append({
-                "Role_Skill_ID": roleSkill.Role_Skill_ID,
+                # "Role_Skill_ID": roleSkill.Role_Skill_ID,
                 "Role_Name": roleSkill.Role_Name,
                 "Skill_Name": roleSkill.Skill_Name,
             })
