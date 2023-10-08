@@ -48,8 +48,8 @@ export default {
         skillRequired: this.newJob.skillRequired,
       };
 
-      // Send the data to the backend (replace with your actual API endpoint)
-      axios.post('/your-api-endpoint', formData)
+      // Send the data to the backend using the appropriate API endpoint
+      axios.post('http://localhost:8000/create_new_job_listing', formData)
         .then(response => {
           console.log('Data submitted successfully:', response.data);
           // Reset form fields after successful submission if needed

@@ -141,6 +141,23 @@ def get_roleSkill_data():
         return jsonify(roleSkill_list)
     except Exception as e:
         return jsonify({"error": str(e)})
+    
+@app.route("/create_new_job_listing", methods=["POST"])
+def create_new_job_listing():
+    try:
+        # Get the data from the POST request
+        data = request.json
+        role_name = data.get("roleName")
+        skill_required = data.get("skillRequired")
+
+        # Create a new entry in the Role_Skill table
+        new_role_skill = Role_Skill(Role_Name=role_name, Skill_Name=skill_required)
+        db.session.add(new_role_skill)
+        db.session.commit()
+
+        return jsonify({"message": "Job listing created successfully"})
+    except Exception as e:
+        return jsonify({"error": str(e)})
 
 # Applications
 class Applications(db.Model):
