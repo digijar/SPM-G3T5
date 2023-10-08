@@ -48,6 +48,25 @@ def get_staff_data():
         return jsonify(staff_list)
     except Exception as e:
         return jsonify({"error": str(e)})
+    
+@app.route("/get_staff_data_by_id/<int:staff_id>", methods=["GET"])
+def get_staff_data_by_id(staff_id):
+    try:
+        staff = Staff.query.get(staff_id)
+        if staff:
+            return jsonify({
+                "Staff_ID": staff.Staff_ID,
+                "Staff_FName": staff.Staff_FName,
+                "Staff_LName": staff.Staff_LName,
+                "Dept": staff.Dept,
+                "Country": staff.Country,
+                "Email": staff.Email,
+                "Role": staff.Role,
+            })
+        else:
+            return jsonify({"error": "Staff not found"})
+    except Exception as e:
+        return jsonify({"error": str(e)})
 
 @app.route("/edit_staff_data", methods=["PUT"])
 def edit_staff_data():
