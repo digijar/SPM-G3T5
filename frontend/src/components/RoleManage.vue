@@ -9,32 +9,6 @@
     </router-link>
     </div>
     
-    <!-- Original Table container -->
-    <!-- <div class="table-container">
-      <table class="job-listing-table">
-        <thead>
-          <tr>
-            <th>Job Description</th>
-            <th>Responsibilities</th>
-            <th>Qualifications</th>
-            <th>Expected Salary</th>
-            <th>Vacancies</th>
-            <th>Deadline</th>
-          </tr>
-        </thead>
-        <tbody> -->
-          <!-- Loop through job listings and display them -->
-          <!-- <tr v-for="(job, index) in jobListings" :key="index">
-            <td>{{ job.description }}</td>
-            <td>{{ job.responsibilities }}</td>
-            <td>{{ job.qualifications }}</td>
-            <td>{{ job.salary }}</td>
-            <td>{{ job.vacancies }}</td>
-            <td>{{ job.deadline }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div> -->
   </div>
 </template>
 
