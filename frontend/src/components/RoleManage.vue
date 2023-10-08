@@ -5,7 +5,7 @@
 
       <!-- Create Job Listing button -->
       <router-link to="/hrstaff/newjoblist" class="create-button">
-      <button>Create a New Job Listing</button>
+      <button>Create a New Role Listing</button>
     </router-link>
     </div>
     
