@@ -209,6 +209,22 @@ def get_staff_skill():
     except Exception as e:
         return jsonify({"error": str(e)})
     
+# Get particular staff's skills 
+@app.route("/get_staff_skill_by_id/<int:staff_id>", methods=['GET'])
+def get_staff_skill_by_id(staff_id):
+    try:
+        staff_skills = StaffSkill.query.filter_by(Staff_ID=staff_id).all()
+        result = []
+        for skill in staff_skills:
+            result.append({
+                'Staff_ID': skill.Staff_ID, 
+                'Skill_Name': skill.Skill_Name
+            })
+        app.logger.info(result)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"error": str(e)})
+    
 if __name__ == "__main__":
     print("This is flask " + os.path.basename(__file__) + " for the SPM monolith...")
     app.run(host="127.0.0.1", port=8000, debug=True)
