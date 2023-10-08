@@ -12,7 +12,7 @@
   </div>
 </template>
 
-<script>
+<!-- <script>
 export default {
   data() {
     return {
@@ -49,7 +49,7 @@ export default {
     },
   },
 };
-</script>
+</script> -->
 
 <style scoped>
 /* component-specific styles here */
