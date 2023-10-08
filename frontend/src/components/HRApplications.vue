@@ -86,6 +86,16 @@
         </div>
       </div>
     </div>
+
+    <!-- Add this section to display staff skills -->
+    <div class="staff-skills">
+      <h2>Staff Skills</h2>
+      <ul>
+        <li v-for="(staffSkill, index) in staffSkills" :key="index">
+          Staff ID: {{ staffSkill.Staff_ID }}, Skill Name: {{ staffSkill.Skill_Name }}
+        </li>
+      </ul>
+    </div>
   </div>
     </div>
 
@@ -103,6 +113,8 @@ export default {
       selectedRoleNames: [],   // Array to store selected Role_Names
       selectedDepts: [],
       searchQuery: '', // Add this line to define searchQuery
+      staffSkills: [], // Add this line to initialize the staffSkills array
+
     };
   },
 
@@ -130,6 +142,7 @@ export default {
 
   created() {
     this.fetchApplications();
+    this.fetchStaffSkills(); // Call the new method to fetch staff skills
   },
 
   methods: {
@@ -153,6 +166,20 @@ export default {
       this.selectedApplication = null;
       $('#exampleModalCenter').modal('hide');
     },
+
+    fetchStaffSkills() {
+      axios
+        .get('http://localhost:8000/get_staff_skill')
+        .then((response) => {
+          this.staffSkills = response.data; // Update the staffSkills data
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
+
+    
+
   },
 };
 </script>
