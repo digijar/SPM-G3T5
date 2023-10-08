@@ -4,9 +4,15 @@
   
       <table class="listings-table">
         <!-- ... -->
+        <thead>
+          <tr>
+            <th class="text-center">Role Name</th>
+            <th class="text-center">Skill Required</th>
+          </tr>
+        </thead>
         <tbody>
           <tr v-for="listing in filteredListings" :key="listing.Role_Skill_ID">
-            <td>{{ listing.Role_Skill_ID }}</td>
+            <!-- <td>{{ listing.Role_Skill_ID }}</td> -->
             <td>{{ listing.Role_Name }}</td>
             <td>{{ listing.Skill_Name }}</td>
           </tr>
