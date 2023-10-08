@@ -125,15 +125,11 @@ class Role_Skill(db.Model):
 @app.route("/get_roleskill_data", methods=["GET"])
 def get_roleSkill_data():
     try:
-        # roleSkill_data = Role_Skill.query.all()
-        roleSkill_data = Role_Skill.query.with_entities(
-             Role_Skill.Role_Name,
-             Role_Skill.Skill_Name
-             ).all()
+        roleSkill_data = Role_Skill.query.all()
         roleSkill_list = []
         for roleSkill in roleSkill_data:
             roleSkill_list.append({
-                # "Role_Skill_ID": roleSkill.Role_Skill_ID,
+                "Role_Skill_ID": roleSkill.Role_Skill_ID,
                 "Role_Name": roleSkill.Role_Name,
                 "Skill_Name": roleSkill.Skill_Name,
             })
@@ -167,6 +163,28 @@ def get_applications_data():
             })
         app.logger.info(applications_list)
         return jsonify(applications_list)
+    except Exception as e:
+        return jsonify({"error": str(e)})
+
+# Staff Skills
+class StaffSkill(db.Model):
+    __tablename__ = 'Staff_Skill'
+    Staff_ID = db.Column(db.Integer, primary_key=True)
+    Skill_Name = db.Column(db.String(20), primary_key=True)
+
+# Get Staff Skills
+@app.route('/get_staff_skill', methods=['GET'])
+def get_staff_skill():
+    try:
+        staff_skills = StaffSkill.query.all()
+        result = []
+        for skill in staff_skills:
+            result.append({
+                'Staff_ID': skill.Staff_ID, 
+                'Skill_Name': skill.Skill_Name
+            })
+        app.logger.info(result)
+        return jsonify(result)
     except Exception as e:
         return jsonify({"error": str(e)})
     
