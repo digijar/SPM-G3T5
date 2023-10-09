@@ -183,7 +183,7 @@ class Applications(db.Model):
     __tablename__ = 'Applications'
     Application_ID = db.Column(db.Integer, primary_key=True)
     Role_Name = db.Column(db.String(255))
-    Staff_Name = db.Column(db.String(255))
+    Staff_ID = db.Column(db.Integer)
     Current_Dept = db.Column(db.String(255))
     Skills_Match_Percentage = db.Column(db.Numeric(5, 2))
     
@@ -197,7 +197,7 @@ def get_applications_data():
             applications_list.append({
                 "Application_ID": application.Application_ID,
                 "Role_Name": application.Role_Name,
-                "Staff_Name": application.Staff_Name,
+                "Staff_ID": application.Staff_ID,
                 "Current_Dept": application.Current_Dept,
                 "Skills_Match_Percentage": application.Skills_Match_Percentage,
             })
