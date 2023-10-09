@@ -59,7 +59,8 @@
           >
             <td class="text-center">{{ application.Application_ID }}</td>
             <td class="text-center">{{ application.Role_Name }}</td>
-            <td class="text-center">{{ application.Staff_ID}}</td>
+            <!-- <td class="text-center">{{ application.Staff_ID}}</td> -->
+            <td class="text-center">{{ application.Staff_Name }}</td>
             <td class="text-center">{{ application.Current_Dept }}</td>
             <td class="text-center">{{ application.Skills_Match_Percentage }}%</td>
             <td class="text-center">
@@ -114,6 +115,7 @@ export default {
       selectedDepts: [],
       searchQuery: '', // Add this line to define searchQuery
       staffSkills: [], // Add this line to initialize the staffSkills array
+      staffNameMap: {}, // New object to store staff names
 
     };
   },
@@ -150,12 +152,23 @@ export default {
       axios
         .get('http://localhost:8000/get_applications_data')
         .then((response) => {
-          this.applications = response.data;
+          this.applications = response.data.map((application) => {
+            // Fetch the staff name based on the staff ID
+            const staffId = application.Staff_ID;
+            if (this.staffNameMap[staffId]) {
+              application.Staff_Name = this.staffNameMap[staffId];
+            } else {
+              // If staff name is not in the map, make an API request to get it
+              this.fetchStaffNameById(staffId);
+            }
+            return application;
+          });
         })
         .catch((error) => {
           console.error(error);
         });
     },
+
 
     showPopup(application) {
       this.selectedApplication = application;
@@ -172,6 +185,25 @@ export default {
         .get('http://localhost:8000/get_staff_skill')
         .then((response) => {
           this.staffSkills = response.data; // Update the staffSkills data
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
+
+    fetchStaffNameById(staffId) {
+      axios
+        .get(`http://localhost:8000/get_staff_data_by_id/${staffId}`)
+        .then((response) => {
+          const staffData = response.data;
+          const staffName = `${staffData.Staff_FName} ${staffData.Staff_LName}`;
+          this.staffNameMap[staffId] = staffName;
+          // Update the staff name in the applications array
+          this.applications.forEach((application) => {
+            if (application.Staff_ID === staffId) {
+              application.Staff_Name = staffName;
+            }
+          });
         })
         .catch((error) => {
           console.error(error);
