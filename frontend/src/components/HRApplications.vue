@@ -78,7 +78,7 @@
         <div class="card-body">
           <h4 class="card-title"> Job Application for {{ selectedApplication.Role_Name }} </h4>
           <p class="card-text">Application ID: {{ selectedApplication.Application_ID }}</p>
-          <p class="card-text">Staff Name: {{ selectedApplication.Staff_ID}}</p>
+          <p class="card-text">Staff ID: {{ selectedApplication.Staff_ID}}</p>
           <p class="card-text">Department: {{ selectedApplication.Current_Dept }}</p>
           <p class="card-text">Skills Match Percentage: {{ selectedApplication.Skills_Match_Percentage }}%</p>
 
