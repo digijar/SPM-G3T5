@@ -161,6 +161,28 @@ def get_roleSkill_data():
     except Exception as e:
         return jsonify({"error": str(e)})
     
+@app.route("/get_roleskill_data_by_name/<role_name>", methods=["GET"])
+def get_roleSkill_data_by_name(role_name):
+    try:
+        roleSkill_data = Role_Skill.query.with_entities(
+            Role_Skill.Role_Name,
+            Role_Skill.Skill_Name
+        ).filter_by(Role_Name=role_name).all()
+
+        roleSkill_list = []
+
+        for roleSkill in roleSkill_data:
+            roleSkill_list.append({
+                "Role_Name": roleSkill.Role_Name,
+                "Skill_Name": roleSkill.Skill_Name,
+            })
+
+        app.logger.info(roleSkill_list)
+        return jsonify(roleSkill_list)
+    except Exception as e:
+        return jsonify({"error": str(e)})
+
+    
 @app.route("/create_new_job_listing", methods=["POST"])
 def create_new_job_listing():
     try:
