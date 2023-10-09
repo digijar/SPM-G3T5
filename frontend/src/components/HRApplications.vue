@@ -65,8 +65,8 @@
             <td class="text-center">{{ application.Skills_Match_Percentage }}%</td>
             <td class="text-center">
                 <!-- TODO: update this to show the skills of the applicant -->
-                <!-- <button @click="" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editStaffModal">View skills</button> -->
-                <button @click="" class="btn btn-primary">View skills</button>
+                <button @click="fetchApplicantSkills(application)" class="btn btn-primary">View skills</button>
+                <!-- <button @click="" class="btn btn-primary">View skills</button> -->
             </td>
           </tr>
         </tbody>
@@ -79,14 +79,25 @@
         <div class="card-body">
           <h4 class="card-title"> Job Application for {{ selectedApplication.Role_Name }} </h4>
           <p class="card-text">Application ID: {{ selectedApplication.Application_ID }}</p>
-          <p class="card-text">Staff ID: {{ selectedApplication.Staff_ID}}</p>
+          <p class="card-text">Staff ID: {{ selectedApplication.Staff_ID }}</p>
           <p class="card-text">Department: {{ selectedApplication.Current_Dept }}</p>
           <p class="card-text">Skills Match Percentage: {{ selectedApplication.Skills_Match_Percentage }}%</p>
+
+          <!-- Display skills as a list of bullet points -->
+          <div v-if="selectedApplicantSkills.length > 0">
+            <h5>Skills:</h5>
+            <ul>
+              <li v-for="skill in selectedApplicantSkills" :key="skill.Skill_Name">
+                {{ skill.Skill_Name }}
+              </li>
+            </ul>
+          </div>
 
           <button class="btn btn-primary" @click="hidePopup">Close</button>
         </div>
       </div>
     </div>
+
 
     <!-- Add this section to display staff skills -->
     <div class="staff-skills">
@@ -116,6 +127,7 @@ export default {
       searchQuery: '', // Add this line to define searchQuery
       staffSkills: [], // Add this line to initialize the staffSkills array
       staffNameMap: {}, // New object to store staff names
+      selectedApplicantSkills: [], // Add this line to store skills
 
     };
   },
@@ -204,6 +216,18 @@ export default {
               application.Staff_Name = staffName;
             }
           });
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
+
+    fetchApplicantSkills(applicant) {
+      axios
+        .get(`http://localhost:8000/get_staff_skill_by_id/${applicant.Staff_ID}`)
+        .then((response) => {
+          this.selectedApplicantSkills = response.data;
+          this.showPopup(applicant); // Show the popup after fetching skills
         })
         .catch((error) => {
           console.error(error);
