@@ -28,7 +28,7 @@
               <td>{{ role.Role_Desc }}</td>
               <td>{{ getSkillName(role.Role_Name) }}</td>
               <td>
-                <button class="btn btn-success">Apply</button>
+                <button class="btn btn-success" @click="openModal_apply(role)">Apply</button>
                 <br>
                 <button class="btn btn-info" @click="openModal(role)">More Details</button>
               </td>
@@ -47,15 +47,23 @@
       @close="modalData.showModal = false"
     />
 
+    <ConfirmApplyModal
+      :showModal="modalData_apply.showModal"
+      :roleName="modalData_apply.roleName"
+      @close="modalData_apply.showModal = false"
+    />
+
   </template>
   
   <script>
   import axios from 'axios';
   import RoleDetailModal from './RoleDetailModal.vue';
+  import ConfirmApplyModal from './ConfirmApplyModal.vue';
 
   export default {
     components: {
-      RoleDetailModal
+      RoleDetailModal,
+      ConfirmApplyModal
     },
 
     data() {
@@ -63,7 +71,9 @@
         roleData: [],
         skillData: [],
         roleSkillData: [],
+        staffData: [],
         searchQuery: '',
+        allDepts: [],
         modalData: {
           showModal: false,
           roleName: '',
@@ -71,10 +81,15 @@
           skillName: '',
           skillDescription: '',
           },
+        modalData_apply: {
+          showModal: false,
+          roleName: '',
+          },
       };
     },
 
     created() {
+      this.fetchStaffData();
       this.fetchRoleData();
       this.fetchSkillData();
       this.fetchRoleSkillData();
@@ -106,8 +121,20 @@
         fetchRoleSkillData() {
             axios.get('http://localhost:8000/get_roleskill_data')
                 .then(response => {
-                    console.log(response.data);
+                    // console.log(response.data);
                     this.roleSkillData = response.data;
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        },
+
+        fetchStaffData() {
+            axios.get('http://localhost:8000/get_staff_data')
+                .then(response => {
+                    // console.log(response.data[0].Dept);
+                    this.staffData = response.data;
+                    // this.getUniqueDepts();
                 })
                 .catch(error => {
                     console.error(error);
@@ -149,6 +176,13 @@
             this.modalData.skillName = this.getSkillName(role.Role_Name);
             this.modalData.skillDescription = this.getSkillDescription(role.Role_Name);
           },
+
+          openModal_apply(role) {
+            this.modalData_apply.showModal = true;
+            this.modalData_apply.roleName = role.Role_Name;
+          },
+
+
     },
 
     computed: {
