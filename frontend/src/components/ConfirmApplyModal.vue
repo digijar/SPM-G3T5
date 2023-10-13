@@ -58,8 +58,20 @@
       },
 
       confirmApply() {
-        this.$emit('close');
-        alert("You have successfully applied for the role of " + this.roleName);
+        if (this.staffIdError || this.deptError) {
+          alert("Please fix error in the required field(s)");
+          return;
+        }
+        else {
+            if (this.staffId == '' || this.currDept == '') {
+                alert("Please fill in the required field(s)");
+                return;
+            }
+            else {
+                alert("You have successfully applied for the role of " + this.roleName);
+                this.$emit('close');
+            }
+        }
       },
 
     validateStaffId() {
