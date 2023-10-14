@@ -42,18 +42,18 @@
       <table class="job-listing-table">
         <thead>
           <tr>
-            <th class="text-center">Application ID</th>
-            <th class="text-center">Role Name</th>
-            <th class="text-center">Staff Name</th>
-            <th class="text-center">Department</th>
-            <th class="text-center">Skills Match Percentage</th>
+            <th class="text-center" @click="sortTable('Application_ID')">Application ID{{ sortIcon('Application_ID') }}</th>
+            <th class="text-center" @click="sortTable('Role_Name')">Role Name{{ sortIcon('Role_Name') }}</th>
+            <th class="text-center" @click="sortTable('Staff_Name')">Staff Name{{ sortIcon('Staff_Name') }}</th>
+            <th class="text-center" @click="sortTable('Current_Dept')">Department{{ sortIcon('Current_Dept') }}</th>
+            <th class="text-center" @click="sortTable('Skills_Match_Percentage')">Skills Match Percentage{{ sortIcon('Skills_Match_Percentage') }}</th>
             <th class="text-center">Action</th>
           </tr>
         </thead>
         <tbody>
           <!-- Loop through applications data and display it -->
           <tr
-            v-for="(application, index) in filteredApplications"
+            v-for="(application, index) in sortedApplications"
             :key="application.Application_ID"
             @click="showPopup(application)"
           >
@@ -128,7 +128,8 @@ export default {
       staffSkills: [], // Add this line to initialize the staffSkills array
       staffNameMap: {}, // New object to store staff names
       selectedApplicantSkills: [], // Add this line to store skills
-
+      sortColumn: '',
+      sortDirection: 'asc',
     };
   },
 
@@ -145,7 +146,15 @@ export default {
         return roleNameMatch && deptMatch && searchMatch;
       });
     },
-
+    sortedApplications() {
+      const column = this.sortColumn;
+      const direction = this.sortDirection === 'asc' ? 1 : -1;
+      return this.filteredApplications.sort((a, b) => {
+        if (a[column] < b[column]) return -1 * direction;
+        if (a[column] > b[column]) return 1 * direction;
+        return 0;
+      });
+    },
     uniqueRoleNames() {
       return [...new Set(this.applications.map(app => app.Role_Name))];
     },
@@ -234,6 +243,24 @@ export default {
         });
     },
 
+    sortTable(column) {
+      if (column === this.sortColumn) {
+        this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+      } else {
+        this.sortColumn = column;
+        this.sortDirection = 'asc';
+      }
+    },
+
+    sortIcon(column) {
+      if (column !== this.sortColumn) {
+        return '';
+      } else if (this.sortDirection === 'asc') {
+        return '▲';
+      } else {
+        return '▼';
+      }
+    },
     
 
   },
