@@ -266,6 +266,37 @@ def get_staff_skill_by_id(staff_id):
     except Exception as e:
         return jsonify({"error": str(e)})
     
+
+@app.route("/get_skill_match/<role_name>/<int:staff_id>", methods=['GET'])
+def get_skill_match(role_name, staff_id):
+    try:
+        # Get the skills of the role
+        role_skills = Role_Skill.query.with_entities(
+            Role_Skill.Skill_Name
+        ).filter_by(Role_Name=role_name).all()
+
+        role_skill_set = set([skill.Skill_Name for skill in role_skills])
+
+        # Get the skills of the applicant
+        staff_skills = StaffSkill.query.filter_by(Staff_ID=staff_id).all()
+        staff_skill_set = set([skill.Skill_Name for skill in staff_skills])
+
+        # Calculate the percentage match
+        common_skills = role_skill_set.intersection(staff_skill_set)
+        match_percentage = (len(common_skills) / len(role_skill_set)) * 100
+
+        result = {
+            'Role_Name': role_name,
+            'Staff_ID': staff_id,
+            'Match_Percentage': match_percentage
+        }
+
+        app.logger.info(result)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"error": str(e)})
+
+    
 if __name__ == "__main__":
     print("This is flask " + os.path.basename(__file__) + " for the SPM monolith...")
     app.run(host="127.0.0.1", port=8000, debug=True)
