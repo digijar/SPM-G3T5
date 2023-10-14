@@ -100,15 +100,16 @@
 
 
     <!-- Add this section to display staff skills -->
-    <div class="staff-skills">
+    <!-- <div class="staff-skills">
       <h2>Staff Skills</h2>
       <ul>
         <li v-for="(staffSkill, index) in staffSkills" :key="index">
           Staff ID: {{ staffSkill.Staff_ID }}, Skill Name: {{ staffSkill.Skill_Name }}
         </li>
       </ul>
-    </div>
+    </div> -->
   </div>
+
     </div>
 
     
@@ -146,6 +147,7 @@ export default {
         return roleNameMatch && deptMatch && searchMatch;
       });
     },
+
     sortedApplications() {
       const column = this.sortColumn;
       const direction = this.sortDirection === 'asc' ? 1 : -1;
@@ -174,12 +176,13 @@ export default {
         .get('http://localhost:8000/get_applications_data')
         .then((response) => {
           this.applications = response.data.map((application) => {
-            // Fetch the staff name based on the staff ID
+            // Fetch and update the skill match percentage for each application
+            this.fetchSkillMatch(application); // This will update the skill match percentage
+            // Continue with the rest of your code
             const staffId = application.Staff_ID;
             if (this.staffNameMap[staffId]) {
               application.Staff_Name = this.staffNameMap[staffId];
             } else {
-              // If staff name is not in the map, make an API request to get it
               this.fetchStaffNameById(staffId);
             }
             return application;
@@ -237,6 +240,20 @@ export default {
         .then((response) => {
           this.selectedApplicantSkills = response.data;
           this.showPopup(applicant); // Show the popup after fetching skills
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
+
+    fetchSkillMatch(application) {
+      axios
+        .get(`http://localhost:8000/get_skill_match/${application.Role_Name}/${application.Staff_ID}`)
+        .then((response) => {
+          // Update the Skills_Match_Percentage property for the selected application
+          application.Skills_Match_Percentage = response.data.Match_Percentage;
+          console.log('Skills Match Percentage updated:', application.Skills_Match_Percentage); // Add this line for debugging
+          this.showPopup(application);
         })
         .catch((error) => {
           console.error(error);
