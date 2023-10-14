@@ -86,7 +86,7 @@
           <!-- Display skills as a list of bullet points -->
           <div v-if="selectedApplicantSkills.length > 0">
             <h5>Skills:</h5>
-            <ul>
+            <ul class="skills-list">
               <li v-for="skill in selectedApplicantSkills" :key="skill.Skill_Name">
                 {{ skill.Skill_Name }}
               </li>
@@ -315,5 +315,10 @@ export default {
 
 .filter-container{
   padding-left: 30px;
+}
+
+.skills-list {
+  padding-left: 0;
+  list-style-position: inside;
 }
 </style>
