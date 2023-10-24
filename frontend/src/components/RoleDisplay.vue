@@ -15,6 +15,7 @@
         <th>Role Name</th>
         <th>Role Description</th>
         <th>Skills Required</th>
+        <th>Deadline</th>
         <th>Action</th>
       </tr>
     </thead>
@@ -24,6 +25,7 @@
         <td>{{ role.Role_Name }}</td>
         <td>{{ role.Role_Desc }}</td>
         <td>{{ getSkillName(role.Role_Name) }}</td>
+        <td>{{ getDeadline(role.Role_Name) }}</td>
         <td>
           <button class="btn btn-success" @click="openModal_apply(role)">Update Listing</button>
           <br>
@@ -44,7 +46,7 @@
 @close="modalData.showModal = false"
 />
 
-<ConfirmApplyModal
+<EditJobModal
 :showModal="modalData_apply.showModal"
 :roleName="modalData_apply.roleName"
 @close="modalData_apply.showModal = false"
@@ -55,12 +57,12 @@
 <script>
 import axios from 'axios';
 import RoleDetailModal from './RoleDetailModal.vue';
-import ConfirmApplyModal from './ConfirmApplyModal.vue';
+import EditJobModal from './EditJobModal.vue';
 
 export default {
 components: {
 RoleDetailModal,
-ConfirmApplyModal
+EditJobModal
 },
 
 data() {
@@ -165,6 +167,27 @@ fetchRoleData() {
       }
       return '';
     },
+
+    getDeadline(roleName) {
+      const role = this.roleData.find(role => role.Role_Name === roleName);
+  if (role) {
+    if (role.Deadline) {
+      // Parse the date string
+      const deadlineDate = new Date(role.Deadline);
+
+      // Extract day, month, and year
+      const day = String(deadlineDate.getDate()).padStart(2, '0');
+      const month = String(deadlineDate.getMonth() + 1).padStart(2, '0'); // Month is zero-based
+      const year = deadlineDate.getFullYear();
+
+      // Create the formatted date string
+      const formattedDate = `${day}-${month}-${year}`;
+
+      return formattedDate;
+    }
+  }
+  return '';
+},
 
     openModal(role) {
       this.modalData.showModal = true;

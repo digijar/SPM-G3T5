@@ -97,6 +97,7 @@ class Role(db.Model):
     __tablename__ = 'Role'
     Role_Name = db.Column(db.String(255), primary_key=True)
     Role_Desc = db.Column(db.String(255))
+    Deadline = db.Column(db.Date)
 
 @app.route("/get_role_data", methods=["GET"])
 def get_role_data():
@@ -107,6 +108,7 @@ def get_role_data():
             role_list.append({
                 "Role_Name": role.Role_Name,
                 "Role_Desc": role.Role_Desc,
+                "Deadline": role.Deadline,
             })
         app.logger.info(role_list)
         return jsonify(role_list)
