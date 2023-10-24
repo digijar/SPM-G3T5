@@ -96,7 +96,7 @@ this.fetchRoleSkillData();
 
 methods: {
 fetchRoleData() {
-      axios.get('http://localhost:8080/get_role_data')
+      axios.get('http://localhost:8000/get_role_data')
           .then(response => {
               // console.log(response.data);
               this.roleData = response.data;
@@ -107,7 +107,7 @@ fetchRoleData() {
   },
 
   fetchSkillData() {
-      axios.get('http://localhost:8080/get_skill_data')
+      axios.get('http://localhost:8000/get_skill_data')
           .then(response => {
               // console.log(response.data);
               this.skillData = response.data;
@@ -118,7 +118,7 @@ fetchRoleData() {
   },
 
   fetchRoleSkillData() {
-      axios.get('http://localhost:8080/get_roleskill_data')
+      axios.get('http://localhost:8000/get_roleskill_data')
           .then(response => {
               // console.log(response.data);
               this.roleSkillData = response.data;
@@ -129,7 +129,7 @@ fetchRoleData() {
   },
 
   fetchStaffData() {
-      axios.get('http://localhost:8080/get_staff_data')
+      axios.get('http://localhost:8000/get_staff_data')
           .then(response => {
               // console.log(response.data[0].Dept);
               this.staffData = response.data;

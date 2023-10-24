@@ -98,7 +98,7 @@ export default {
       },
   
   fetchStaffData() {
-      axios.get('http://localhost:8080/get_staff_data')
+      axios.get('http://localhost:8000/get_staff_data')
           .then(response => {
               // console.log(response.data[0].Dept);
               this.staffData = response.data;
