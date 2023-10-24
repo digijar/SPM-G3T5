@@ -2,54 +2,9 @@
   <div>
     <div class="header">
       <h1 class="title">Job Listing Management</h1>
-
-      <!-- Create Job Listing button -->
-      <router-link to="/hrstaff/newjoblist" class="create-button">
-      <button>Create a New Role Listing</button>
-    </router-link>
     </div>
-    
   </div>
 </template>
-
-<!-- <script>
-export default {
-  data() {
-    return {
-      jobListings: [], // Initialise empty array to store job listings
-      showCreateForm: false, // Flag to control the visibility of the create job form
-      newJob: { // Object to store data for a new job listing
-        description: '',
-        responsibilities: '',
-        qualifications: '',
-        salary: '',
-        vacancies: '',
-        deadline: '',
-      },
-    };
-  },
-  methods: {
-    showCreateJobForm() {
-      this.showCreateForm = true;
-    },
-    createJobListing() {
-      // Add the new job listing to the jobListings array
-      this.jobListings.push(this.newJob);
-      
-      // Reset the new job object and hide the create form
-      this.newJob = {
-        description: '',
-        responsibilities: '',
-        qualifications: '',
-        salary: '',
-        vacancies: '',
-        deadline: '',
-      };
-      this.showCreateForm = false;
-    },
-  },
-};
-</script> -->
 
 <style scoped>
 /* component-specific styles here */
