@@ -1,105 +1,237 @@
 <template>
-  <div class="table-container">
-    <SkillsFilter :listings="listings" @filter="filterListings"></SkillsFilter>
+  <div>
+    <div class="search-bar">
+      <input type="text" v-model="searchQuery" placeholder="Search by role name">
+      <router-link to="/hrstaff/newjoblist" class="create-button">
+        <button>Create a New Role Listing</button>
+      </router-link>
+    </div>
 
-    <table class="listings-table">
-      <colgroup>
-        <col class="role-column">
-        <col class="skill-column">
-      </colgroup>
-      <thead>
-        <tr>
-          <th class="text-center">Role Name</th>
-          <th class="text-center">Skill Required</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="listing in filteredListings" :key="listing.Role_Skill_ID">
-          <td class="role-column">{{ listing.Role_Name }}</td>
-          <td class="skill-column">{{ listing.Skill_Name }}</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+<!-- Table container -->
+<div class="table-container">
+  <table class="job-listing-table">
+    <thead>
+      <tr>
+        <th>Role Name</th>
+        <th>Role Description</th>
+        <th>Skills Required</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Loop through job listings and display them -->
+      <tr v-for="role in filteredroleData" :key="role.Role_Name">
+        <td>{{ role.Role_Name }}</td>
+        <td>{{ role.Role_Desc }}</td>
+        <td>{{ getSkillName(role.Role_Name) }}</td>
+        <td>
+          <button class="btn btn-success" @click="openModal_apply(role)">Update Listing</button>
+          <br>
+          <button class="btn btn-info" @click="openModal(role)">More Details</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+</div>
+
+<RoleDetailModal
+:showModal="modalData.showModal"
+:roleName="modalData.roleName"
+:roleDescription="modalData.roleDescription"
+:skillName="modalData.skillName"
+:skillDescription="modalData.skillDescription"
+@close="modalData.showModal = false"
+/>
+
+<ConfirmApplyModal
+:showModal="modalData_apply.showModal"
+:roleName="modalData_apply.roleName"
+@close="modalData_apply.showModal = false"
+/>
+
 </template>
 
 <script>
-import SkillsFilter from './SkillsFilter.vue';
 import axios from 'axios';
+import RoleDetailModal from './RoleDetailModal.vue';
+import ConfirmApplyModal from './ConfirmApplyModal.vue';
 
 export default {
-  components: {
-    SkillsFilter,
+components: {
+RoleDetailModal,
+ConfirmApplyModal
+},
+
+data() {
+return {
+  roleData: [],
+  skillData: [],
+  roleSkillData: [],
+  staffData: [],
+  searchQuery: '',
+  allDepts: [],
+  modalData: {
+    showModal: false,
+    roleName: '',
+    roleDescription: '',
+    skillName: '',
+    skillDescription: '',
+    },
+  modalData_apply: {
+    showModal: false,
+    roleName: '',
+    },
+};
+},
+
+created() {
+this.fetchStaffData();
+this.fetchRoleData();
+this.fetchSkillData();
+this.fetchRoleSkillData();
+},
+
+methods: {
+fetchRoleData() {
+      axios.get('http://localhost:8080/get_role_data')
+          .then(response => {
+              // console.log(response.data);
+              this.roleData = response.data;
+          })
+          .catch(error => {
+              console.error(error);
+          });
   },
-  data() {
-    return {
-      listings: [],
-      selectedSkills: [],
-    };
+
+  fetchSkillData() {
+      axios.get('http://localhost:8080/get_skill_data')
+          .then(response => {
+              // console.log(response.data);
+              this.skillData = response.data;
+          })
+          .catch(error => {
+              console.error(error);
+          });
   },
-  computed: {
-    filteredListings() {
-      // Filter listings based on selected skills
-      if (this.selectedSkills.length === 0) {
-        return this.listings; // Return all listings if no skills are selected
+
+  fetchRoleSkillData() {
+      axios.get('http://localhost:8080/get_roleskill_data')
+          .then(response => {
+              // console.log(response.data);
+              this.roleSkillData = response.data;
+          })
+          .catch(error => {
+              console.error(error);
+          });
+  },
+
+  fetchStaffData() {
+      axios.get('http://localhost:8080/get_staff_data')
+          .then(response => {
+              // console.log(response.data[0].Dept);
+              this.staffData = response.data;
+              // this.getUniqueDepts();
+          })
+          .catch(error => {
+              console.error(error);
+          });
+  },
+
+  getSkillName(roleName) {
+      const role = this.roleData.find(role => role.Role_Name === roleName);
+      if (role) {
+        const roleSkill = this.roleSkillData.find(rs => rs.Role_Name === role.Role_Name);
+        if (roleSkill) {
+          const skill = this.skillData.find(skill => skill.Skill_Name === roleSkill.Skill_Name);
+          if (skill) {
+            return skill.Skill_Name;
+          }
+        }
       }
-      return this.listings.filter(listing => this.selectedSkills.includes(listing.Skill_Name));
+      return '';
     },
-  },
-  methods: {
-    fetchData() {
-      axios.get('http://localhost:8000/get_roleskill_data')
-        .then(response => {
-          this.listings = response.data;
-        })
-        .catch(error => {
-          console.error('Error fetching data:', error);
-        });
+
+    getSkillDescription(roleName) {
+      const role = this.roleData.find(role => role.Role_Name === roleName);
+      if (role) {
+        const roleSkill = this.roleSkillData.find(rs => rs.Role_Name === role.Role_Name);
+        if (roleSkill) {
+          const skill = this.skillData.find(skill => skill.Skill_Name === roleSkill.Skill_Name);
+          if (skill) {
+            return skill.Skill_Desc;
+          }
+        }
+      }
+      return '';
     },
-    filterListings(selectedSkills) {
-      this.selectedSkills = selectedSkills;
+
+    openModal(role) {
+      this.modalData.showModal = true;
+      this.modalData.roleName = role.Role_Name;
+      this.modalData.roleDescription = role.Role_Desc;
+      this.modalData.skillName = this.getSkillName(role.Role_Name);
+      this.modalData.skillDescription = this.getSkillDescription(role.Role_Name);
     },
-  },
-  mounted() {
-    this.fetchData();
-  },
+
+    openModal_apply(role) {
+      this.modalData_apply.showModal = true;
+      this.modalData_apply.roleName = role.Role_Name;
+    },
+
+
+},
+
+computed: {
+filteredroleData() {
+  return this.roleData.filter((role) => {
+    return role.Role_Name.toLowerCase().includes(this.searchQuery.toLowerCase());
+  });
+}
+}
 };
 </script>
 
-<style>
+<style scoped>
+/* component-specific styles here */
+.header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 20px;
+padding: 10px; /* padding around header */
+}
+
+.title {
+margin: 0;
+}
+
+.create-button {
+/* padding around button */
+padding: 5px 10px;
+}
+
 .table-container {
-  max-width: 800px;
-  margin: 0 auto;
+max-width: 800px;
+margin: 0 auto;
 }
 
-.listings-table {
-  border-collapse: collapse;
-  width: 100%;
-  margin-top: 16px;
-  margin-bottom: 16px;
-  table-layout: fixed; 
+.job-listing-table {
+border-collapse: collapse;
+width: 100%;
 }
 
-.listings-table th,
-.listings-table td {
-  border: 1px solid #ccc;
-  padding: 8px;
-  text-align: center;
-  white-space: nowrap; 
-  overflow: hidden; 
-  text-overflow: ellipsis; 
+.job-listing-table th, .job-listing-table td {
+border: 1px solid #ccc;
+padding: 8px;
 }
 
-.role-column {
-  width: 40%; 
+.job-listing-table th {
+background-color: #f2f2f2;
+font-weight: bold;
 }
 
-.skill-column {
-  width: 60%; 
-}
-
-.listings-table th {
-  background-color: #f2f2f2;
-  font-weight: bold;
+.search-bar {
+  padding:10px;
 }
 </style>
