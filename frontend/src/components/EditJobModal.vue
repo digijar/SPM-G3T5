@@ -3,28 +3,35 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">Application Form</h5>
+          <h5 class="modal-title">Edit Details</h5>
           <button @click="closeModal" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <p>Fill in the following details:</p>
-          <form class="form-floating mb-3">
-          <input type="text" class="form-control" id="InputValue_StaffID" placeholder="" v-model="staffId" @input="validateStaffId" :class="{ 'is-invalid': staffIdError }">
-          <label for="InputValue_StaffID">Your Staff ID</label>
-          <div class="invalid-feedback" v-if="staffIdError">{{ staffIdError }}</div>
-          </form>
-          <form class="form-floating">
-          <input type="text" class="form-control" id="InputValue_Dept" placeholder="" v-model="currDept" @input="validateDepartment" :class="{ 'is-invalid': deptError }">
-          <label for="InputValue_Dept">Your Current Department</label>
-          <div class="invalid-feedback" v-if="deptError">{{ deptError }}</div>
+          <form @submit.prevent="submitForm">
+            <div class="form-floating mb-3">
+              <textarea class="form-control" id="InputValue_RoleDesc" v-model="roleDesc"></textarea>
+              <label for="InputValue_RoleDesc">Role Description</label>
+            </div>
+
+            <div class="form-floating mb-3">
+              <select class="form-select" id="InputValue_skillReq" v-model="skillReq">
+                <option value="" disabled>Select</option>
+                <option v-for="skill in skills" :key="skill.Skill_Name" :value="skill.Skill_Name">{{ skill.Skill_Name }}</option>
+              </select>
+              <label for="InputValue_skillReq">Skill Required</label>
+            </div>
+
+            <div class="form-floating mb-3">
+              <input type="date" class="form-control" id="InputValue_Deadline" v-model="deadline">
+              <label for="InputValue_Deadline">Deadline</label>
+            </div>
           </form>
         </div>
         <div class="modal-footer">
-          <button @click="closeModal" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button @click="confirmApply" type="button" class="btn btn-success" data-bs-dismiss="modal">Apply</button>
+          <button @click="submitForm" type="button" class="btn btn-success" data-bs-dismiss="modal">Submit</button>
         </div>
+      </div>
     </div>
-  </div>
   </div>
 </template>
 
@@ -36,19 +43,13 @@ export default {
     showModal: Boolean,
     roleName: String,
   },
-  
-  created() {
-    this.fetchStaffData();
-  },
 
   data() {
     return {
-      staffId: '',
-      staffIdError: '', 
-      currDept: '',
-      deptError: '',
-      testDepts: ['1', '2', '3', '4'],
-      allDepts: [],
+      roleDesc: '',
+      skillReq: '',
+      deadline: '',
+      skills: [],
     };
   },
 
@@ -57,85 +58,56 @@ export default {
       this.$emit('close');
     },
 
-    confirmApply() {
-      if (this.staffIdError || this.deptError) {
-        alert("Please fix error in the required field(s)");
-        return;
-      }
-      else {
-          if (this.staffId == '' || this.currDept == '') {
-              alert("Please fill in the required field(s)");
-              return;
-          }
-          else {
-              alert("You have successfully applied for the role of " + this.roleName);
-              this.$emit('close');
-          }
-      }
-    },
-
-  validateStaffId() {
-      // console.log('Validating staff ID:', this.staffId);
-      const regex = /^\d{6}$/;
-      if (!regex.test(this.staffId)) {
-          // console.log('Invalid staff ID');
-          this.staffIdError = 'Staff ID must be 6 digits';
-      } else {
-          // console.log('Valid staff ID');
-          this.staffIdError = '';
-          }
-      },
-  
-  validateDepartment() {
-      // console.log('Validating department:', this.currDept);
-      if (!this.allDepts.includes(this.currDept)) {
-          // console.log('Invalid department');
-          this.deptError = 'Department does not exist';
-      } else {
-          // console.log('Valid department');
-          this.deptError = '';
-          }
-      },
-  
-  fetchStaffData() {
-      axios.get('http://localhost:8000/get_staff_data')
-          .then(response => {
-              // console.log(response.data[0].Dept);
-              this.staffData = response.data;
-              this.getUniqueDepts();
-          })
-          .catch(error => {
-              console.error(error);
-          });
-      },
-
-      getUniqueDepts() {
-        this.staffData.forEach(staff => {
-          if (!this.allDepts.includes(staff.Dept)) {
-            this.allDepts.push(staff.Dept);
-          }            
-        });
-        console.log(this.allDepts)
-      },
-
-  selectDept(dept) {
-      this.selectedDept = dept;
-      console.log('Selected dept:', dept);
-      }
+    async fetchRoleSkillData() {
+    try {
+      const response = await axios.get('http://localhost:8080/get_roleskill_data');
+      const roleSkillData = response.data;
+      
+      const uniqueSkills = new Set();
+      this.skills = roleSkillData.filter((roleSkill) => {
+        if (!uniqueSkills.has(roleSkill.Skill_Name)) {
+          uniqueSkills.add(roleSkill.Skill_Name);
+          return true;
+        }
+        return false;
+      });
+    } catch (error) {
+      console.error(error);
+    }
   },
-  
+
+    submitForm() {
+      const data = {
+        roleDesc: this.roleDesc,
+        skillReq: this.skillReq,
+        deadline: this.deadline,
+      };
+
+      // Send PUT request to API endpoint
+      axios.put('api_endpoint_here', data)
+        .then(response => {
+          console.log(response.data);
+        })
+        .catch(error => {
+          console.error(error);
+        });
+
+      this.$emit('close');
+    },
+  },
+
+  created() {
+    this.fetchRoleSkillData();
+  },
 };
 </script>
 
 <style scoped>
-/* Modal styling goes here */
 .modal {
-  /* Style to make it a modal dialog, like position, background, and opacity */
   display: block;
 }
 
 .modal-content {
-  /* Style for the content of the modal, like padding, background color, etc. */
   display: flex;
 }
 </style>
