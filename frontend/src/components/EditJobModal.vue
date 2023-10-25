@@ -66,7 +66,7 @@ export default {
 
     async fetchRoleSkillData() {
       try {
-        const response = await axios.get('http://localhost:8080/get_roleskill_data');
+        const response = await axios.get('http://localhost:8000/get_roleskill_data');
         const roleSkillData = response.data;
 
         const uniqueSkills = new Set();
