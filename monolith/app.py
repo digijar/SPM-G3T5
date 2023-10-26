@@ -284,6 +284,8 @@ def get_skill_match(role_name, staff_id):
         staff_skill_set = set([skill.Skill_Name for skill in staff_skills])
 
         # Calculate the percentage match
+        app.logger.info(role_skill_set)
+        app.logger.info(staff_skill_set)
         common_skills = role_skill_set.intersection(staff_skill_set)
         match_percentage = (len(common_skills) / len(role_skill_set)) * 100
 

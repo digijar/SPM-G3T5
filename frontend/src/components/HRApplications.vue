@@ -116,6 +116,7 @@
 </template>
 
 <script>
+import 'jquery';
 import axios from 'axios';
 
 export default {
@@ -251,9 +252,9 @@ export default {
         .get(`http://localhost:8000/get_skill_match/${application.Role_Name}/${application.Staff_ID}`)
         .then((response) => {
           // Update the Skills_Match_Percentage property for the selected application
-          application.Skills_Match_Percentage = response.data.Match_Percentage;
+          application.Skills_Match_Percentage = parseFloat(response.data.Match_Percentage).toFixed(2);
           console.log('Skills Match Percentage updated:', application.Skills_Match_Percentage); // Add this line for debugging
-          this.showPopup(application);
+          // this.showPopup(application);
         })
         .catch((error) => {
           console.error(error);

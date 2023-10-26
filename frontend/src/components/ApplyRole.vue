@@ -25,8 +25,8 @@
             <!-- Loop through job listings and display them -->
             <tr v-for="role in filteredroleData" :key="role.Role_Name">
               <td>{{ role.Role_Name }}</td>
-              <td>{{ role.Role_Desc }}</td>
-              <td>{{ getSkillName(role.Role_Name) }}</td>
+              <td>{{ role.Role_Desc.slice(0, 150) + "..." }}</td>
+              <td>{{ getRoleSkills(role.Role_Name) }}</td>
               <td>
                 <button class="btn btn-success" @click="openModal_apply(role)">Apply</button>
                 <br>
@@ -71,6 +71,8 @@
         roleData: [],
         skillData: [],
         roleSkillData: [],
+        roleSkills: [],
+        formattedSkills: '',
         staffData: [],
         searchQuery: '',
         allDepts: [],
@@ -141,46 +143,64 @@
                 });
         },
 
-        getSkillName(roleName) {
-            const role = this.roleData.find(role => role.Role_Name === roleName);
-            if (role) {
-              const roleSkill = this.roleSkillData.find(rs => rs.Role_Name === role.Role_Name);
-              if (roleSkill) {
-                const skill = this.skillData.find(skill => skill.Skill_Name === roleSkill.Skill_Name);
-                if (skill) {
-                  return skill.Skill_Name;
-                }
+        getRoleSkills(roleName) {
+          axios.get(`http://localhost:8000/get_roleskill_data_by_name/${roleName}`)
+            .then(response => {
+              // Map the response data to this.roleSkills
+              this.roleSkills = response.data;
+
+              // Format the Skill_Names into this.formattedSkills
+              this.formattedSkills = this.roleSkills
+                .map(item => item.Skill_Name)  // Extract Skill_Names
+                .join(', ');  // Join them with a comma
+
+              console.log('Role Skills:', this.roleSkills);
+              console.log('Formatted Skills:', this.formattedSkills);
+              return this.formattedSkills
+            })
+            .catch(error => {
+              console.error(error);
+            });
+            return ''
+        },
+
+        // const role = this.roleData.find(role => role.Role_Name === roleName);
+        // if (role) {
+        //   const roleSkill = this.roleSkillData.find(rs => rs.Role_Name === role.Role_Name);
+        //   if (roleSkill) {
+        //     const skill = this.skillData.find(skill => skill.Skill_Name === roleSkill.Skill_Name);
+        //     if (skill) {
+        //       return skill.Skill_Name;
+        //     }
+        //   }
+        // }
+
+        getSkillDescription(roleName) {
+          const role = this.roleData.find(role => role.Role_Name === roleName);
+          if (role) {
+            const roleSkill = this.roleSkillData.find(rs => rs.Role_Name === role.Role_Name);
+            if (roleSkill) {
+              const skill = this.skillData.find(skill => skill.Skill_Name === roleSkill.Skill_Name);
+              if (skill) {
+                return skill.Skill_Desc;
               }
             }
-            return '';
-          },
+          }
+          return '';
+        },
 
-          getSkillDescription(roleName) {
-            const role = this.roleData.find(role => role.Role_Name === roleName);
-            if (role) {
-              const roleSkill = this.roleSkillData.find(rs => rs.Role_Name === role.Role_Name);
-              if (roleSkill) {
-                const skill = this.skillData.find(skill => skill.Skill_Name === roleSkill.Skill_Name);
-                if (skill) {
-                  return skill.Skill_Desc;
-                }
-              }
-            }
-            return '';
-          },
+        openModal(role) {
+          this.modalData.showModal = true;
+          this.modalData.roleName = role.Role_Name;
+          this.modalData.roleDescription = role.Role_Desc;
+          this.modalData.skillName = this.getSkillName(role.Role_Name);
+          this.modalData.skillDescription = this.getSkillDescription(role.Role_Name);
+        },
 
-          openModal(role) {
-            this.modalData.showModal = true;
-            this.modalData.roleName = role.Role_Name;
-            this.modalData.roleDescription = role.Role_Desc;
-            this.modalData.skillName = this.getSkillName(role.Role_Name);
-            this.modalData.skillDescription = this.getSkillDescription(role.Role_Name);
-          },
-
-          openModal_apply(role) {
-            this.modalData_apply.showModal = true;
-            this.modalData_apply.roleName = role.Role_Name;
-          },
+        openModal_apply(role) {
+          this.modalData_apply.showModal = true;
+          this.modalData_apply.roleName = role.Role_Name;
+        },
 
 
     },
@@ -190,8 +210,8 @@
         return this.roleData.filter((role) => {
           return role.Role_Name.toLowerCase().includes(this.searchQuery.toLowerCase());
         });
-      }
-    }
+      },
+    },
   };
   </script>
   
