@@ -4,11 +4,13 @@
         <h1 class="title">Open Role Listing</h1>
       </div>
       
-      <button @click="fetchRoleData" class="btn btn-info">Fetch Role Data</button>
+      <!-- <button @click="fetchRoleData" class="btn btn-info">Fetch Role Data</button>
       <button @click="fetchSkillData" class="btn btn-info">Fetch Skill Data</button>
-      <button @click="fetchRoleSkillData" class="btn btn-info">Fetch roleSkill Data</button>
-      
-      <input type="text" v-model="searchQuery" placeholder="Search by role name">
+      <button @click="fetchRoleSkillData" class="btn btn-info">Fetch roleSkill Data</button> -->
+      <div class="container mb-3">
+        <input type="text" v-model="searchQuery" placeholder="Search by role name">
+        <DeptFilter :allDepts="uniqueDepts" :selectedDept="selectedDept" :selectedLocation="selectedLocation" @update:selectedDept="selectedDept = $event" @update:selectedLocation="selectedLocation = $event" />
+      </div>
 
       <!-- Table container -->
       <div class="table-container">
@@ -18,6 +20,8 @@
               <th>Role Name</th>
               <th>Role Description</th>
               <th>Skills Required</th>
+              <th>Department</th>
+              <th>Location</th>
               <th>Action</th>
             </tr>
           </thead>
@@ -27,6 +31,8 @@
               <td>{{ role.Role_Name }}</td>
               <td>{{ role.Role_Desc.slice(0, 150) + "..." }}</td>
               <td>{{ getRoleSkills(role.Role_Name) }}</td>
+              <td>{{ role.Dept }}</td>
+              <td>{{ role.Location }}</td>
               <td>
                 <button class="btn btn-success" @click="openModal_apply(role)">Apply</button>
                 <br>
@@ -59,11 +65,15 @@
   import axios from 'axios';
   import RoleDetailModal from './RoleDetailModal.vue';
   import ConfirmApplyModal from './ConfirmApplyModal.vue';
+  import DeptFilter from './DeptFilter.vue';
 
   export default {
+    name: 'ApplyRole',
+    
     components: {
       RoleDetailModal,
-      ConfirmApplyModal
+      ConfirmApplyModal,
+      DeptFilter,
     },
 
     data() {
@@ -74,8 +84,12 @@
         roleSkills: [],
         formattedSkills: '',
         staffData: [],
+
         searchQuery: '',
         allDepts: [],
+        selectedDept: '',
+        selectedLocation: '',
+
         modalData: {
           showModal: false,
           roleName: '',
@@ -143,6 +157,14 @@
                 });
         },
 
+        getUniqueDepts() {
+            const allDepts = this.staffData.map(staff => staff.Dept);
+            return [...new Set(allDepts)];
+          },
+          selectDept(dept) {
+            this.selectedDept = dept;
+          },
+
         getRoleSkills(roleName) {
           axios.get(`http://localhost:8000/get_roleskill_data_by_name/${roleName}`)
             .then(response => {
@@ -154,8 +176,8 @@
                 .map(item => item.Skill_Name)  // Extract Skill_Names
                 .join(', ');  // Join them with a comma
 
-              console.log('Role Skills:', this.roleSkills);
-              console.log('Formatted Skills:', this.formattedSkills);
+              // console.log('Role Skills:', this.roleSkills);
+              // console.log('Formatted Skills:', this.formattedSkills);
               return this.formattedSkills
             })
             .catch(error => {
@@ -202,15 +224,31 @@
           this.modalData_apply.roleName = role.Role_Name;
         },
 
+        updateSelectedDept(value) {
+          this.selectedDept = value;
+        },
 
     },
 
     computed: {
-      filteredroleData() {
-        return this.roleData.filter((role) => {
-          return role.Role_Name.toLowerCase().includes(this.searchQuery.toLowerCase());
-        });
-      },
+        filteredroleData() {
+          let filteredData = this.roleData;
+          if (this.selectedDept) {
+            filteredData = filteredData.filter(role => role.Dept === this.selectedDept);
+          }
+          if (this.selectedLocation) {
+            filteredData = filteredData.filter(role => role.Location === this.selectedLocation);
+          }
+          if (this.searchQuery) {
+            filteredData = filteredData.filter(role => role.Role_Name.toLowerCase().includes(this.searchQuery.toLowerCase()));
+          }
+          return filteredData;
+        },
+
+      uniqueDepts() {
+          // const allDepts = this.staffData.map(staff => staff.Dept);
+          return [...new Set(this.roleData.map(role => role.Dept))];
+        },
     },
   };
   </script>

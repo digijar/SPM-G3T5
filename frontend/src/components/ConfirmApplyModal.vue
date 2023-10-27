@@ -90,7 +90,7 @@
         // console.log('Validating department:', this.currDept);
         if (!this.allDepts.includes(this.currDept)) {
             // console.log('Invalid department');
-            this.deptError = 'Department does not exist';
+            this.deptError = 'Department does not exist!';
         } else {
             // console.log('Valid department');
             this.deptError = '';
