@@ -246,7 +246,7 @@ export default {
     },
     fetchMissingSkills(application) {
       axios
-        .get(`http://localhost:8000/get_roleskill_data/${application.Role_Name}`)
+        .get(`http://localhost:8000/get_roleskill_data_by_name/${application.Role_Name}`)
         .then((response) => {
           const roleSkills = response.data;
           axios
