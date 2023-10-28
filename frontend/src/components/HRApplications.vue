@@ -64,7 +64,6 @@
             <td class="text-center">{{ application.Current_Dept }}</td>
             <td class="text-center">{{ application.Skills_Match_Percentage }}%</td>
             <td class="text-center">
-                <!-- TODO: update this to show the skills of the applicant -->
                 <button @click="fetchApplicantSkills(application)" class="btn btn-primary">View skills</button>
                 <!-- <button @click="" class="btn btn-primary">View skills</button> -->
             </td>
@@ -93,21 +92,19 @@
             </ul>
           </div>
 
+          <!-- Display missing skills as a list of bullet points -->
+        <div v-if="selectedMissingSkills.length > 0">
+          <h5>Missing Skills:</h5>
+          <ul class="skills-list">
+            <li v-for="skill in selectedMissingSkills" :key="skill.Skill_Name">
+              {{ skill.Skill_Name }}
+            </li>
+          </ul>
+        </div>
           <button class="btn btn-primary" @click="hidePopup">Close</button>
         </div>
       </div>
     </div>
-
-
-    <!-- Add this section to display staff skills -->
-    <!-- <div class="staff-skills">
-      <h2>Staff Skills</h2>
-      <ul>
-        <li v-for="(staffSkill, index) in staffSkills" :key="index">
-          Staff ID: {{ staffSkill.Staff_ID }}, Skill Name: {{ staffSkill.Skill_Name }}
-        </li>
-      </ul>
-    </div> -->
   </div>
 
     </div>
@@ -124,12 +121,13 @@ export default {
     return {
       applications: [],
       selectedApplication: null,
-      selectedRoleNames: [],   // Array to store selected Role_Names
-      selectedDepts: [],
-      searchQuery: '', // Add this line to define searchQuery
-      staffSkills: [], // Add this line to initialize the staffSkills array
+      selectedRoleNames: [],   // Store selected Role_Names
+      selectedDepts: [], // Store selected Depts
+      searchQuery: '', // Define searchQuery
+      staffSkills: [], // Initialize the staffSkills array
       staffNameMap: {}, // New object to store staff names
-      selectedApplicantSkills: [], // Add this line to store skills
+      selectedApplicantSkills: [], // Store skills
+      selectedMissingSkills: [], // Store missing skills
       sortColumn: '',
       sortDirection: 'asc',
     };
@@ -178,8 +176,8 @@ export default {
         .then((response) => {
           this.applications = response.data.map((application) => {
             // Fetch and update the skill match percentage for each application
-            this.fetchSkillMatch(application); // This will update the skill match percentage
-            // Continue with the rest of your code
+            this.fetchSkillMatch(application); // Update the skill match percentage
+            
             const staffId = application.Staff_ID;
             if (this.staffNameMap[staffId]) {
               application.Staff_Name = this.staffNameMap[staffId];
@@ -240,13 +238,35 @@ export default {
         .get(`http://localhost:8000/get_staff_skill_by_id/${applicant.Staff_ID}`)
         .then((response) => {
           this.selectedApplicantSkills = response.data;
-          this.showPopup(applicant); // Show the popup after fetching skills
+          this.fetchMissingSkills(applicant); // Show the popup after fetching skills
         })
         .catch((error) => {
           console.error(error);
         });
     },
-
+    fetchMissingSkills(application) {
+      axios
+        .get(`http://localhost:8000/get_roleskill_data/${application.Role_Name}`)
+        .then((response) => {
+          const roleSkills = response.data;
+          axios
+            .get(`http://localhost:8000/get_staff_skill_by_id/${application.Staff_ID}`)
+            .then((response) => {
+              const applicantSkills = response.data;
+              const applicantSkillNames = applicantSkills.map(skill => skill.Skill_Name);
+              const missingSkills = roleSkills.filter(skill => !applicantSkillNames.includes(skill.Skill_Name));
+              this.selectedApplicantSkills = applicantSkills;
+              this.selectedMissingSkills = missingSkills;
+              this.showPopup(application); // Show the popup after fetching skills
+            })
+            .catch((error) => {
+              console.error(error);
+            });
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
     fetchSkillMatch(application) {
       axios
         .get(`http://localhost:8000/get_skill_match/${application.Role_Name}/${application.Staff_ID}`)
