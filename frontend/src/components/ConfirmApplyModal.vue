@@ -3,7 +3,7 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">Application Form</h5>
+            <h5 class="modal-title">Applying for: <b>{{ roleName }}</b></h5>
             <button @click="closeModal" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
@@ -13,11 +13,8 @@
             <label for="InputValue_StaffID">Your Staff ID</label>
             <div class="invalid-feedback" v-if="staffIdError">{{ staffIdError }}</div>
             </form>
-            <form class="form-floating">
-            <input type="text" class="form-control" id="InputValue_Dept" placeholder="" v-model="currDept" @input="validateDepartment" :class="{ 'is-invalid': deptError }">
-            <label for="InputValue_Dept">Your Current Department</label>
-            <div class="invalid-feedback" v-if="deptError">{{ deptError }}</div>
-            </form>
+            <p>Current Department: <b>{{ currDept }}</b></p>
+            <p>Percentage of Skills Matched: <b>{{ roleSkillPercent }}</b></p>
           </div>
           <div class="modal-footer">
             <button @click="closeModal" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -38,7 +35,7 @@
     },
     
     created() {
-      this.fetchStaffData();
+      // this.fetchStaffData();
     },
 
     data() {
@@ -46,24 +43,27 @@
         staffId: '',
         staffIdError: '', 
         currDept: '',
-        deptError: '',
-        testDepts: ['1', '2', '3', '4'],
         allDepts: [],
+        staffIdData: {},
+        roleSkillPercent: '',
       };
     },
 
     methods: {
       closeModal() {
         this.$emit('close');
+        this.staffId = '';
+        this.currDept = '';
+        this.roleSkillPercent = '';
       },
 
       confirmApply() {
-        if (this.staffIdError || this.deptError) {
+        if (this.staffIdError) {
           alert("Please fix error in the required field(s)");
           return;
         }
         else {
-            if (this.staffId == '' || this.currDept == '') {
+            if (this.staffId == '') {
                 alert("Please fill in the required field(s)");
                 return;
             }
@@ -78,52 +78,78 @@
         // console.log('Validating staff ID:', this.staffId);
         const regex = /^\d{6}$/;
         if (!regex.test(this.staffId)) {
-            // console.log('Invalid staff ID');
+            console.log('Invalid staff ID');
             this.staffIdError = 'Staff ID must be 6 digits';
         } else {
-            // console.log('Valid staff ID');
-            this.staffIdError = '';
+            this.fetchStaffIdData(this.staffId)
             }
         },
-    
-    validateDepartment() {
-        // console.log('Validating department:', this.currDept);
-        if (!this.allDepts.includes(this.currDept)) {
-            // console.log('Invalid department');
-            this.deptError = 'Department does not exist!';
-        } else {
-            // console.log('Valid department');
-            this.deptError = '';
-            }
-        },
-    
-    fetchStaffData() {
-        axios.get('http://localhost:8000/get_staff_data')
+      
+      fetchStaffIdData() {
+        // console.log('Fetching staff data for staff ID:', this.staffId);
+        axios.get('http://localhost:8000/get_staff_data_by_id/' + this.staffId)
             .then(response => {
-                // console.log(response.data[0].Dept);
-                this.staffData = response.data;
-                this.getUniqueDepts();
+                console.log(response.data);
+                if (response.data.error) {
+                    this.staffIdError = 'Staff ID does not exist';
+                    this.staffIdData = {};
+                    this.currDept = '';
+                } else {
+                    this.staffIdError = '';
+                    this.staffIdData = response.data;
+                    this.currDept = this.staffIdData.Dept;
+                    this.getSkillMatchPercentage();
+                }
             })
             .catch(error => {
-                console.error(error);
+              console.error(error);
             });
         },
-
-        getUniqueDepts() {
-          this.staffData.forEach(staff => {
-            if (!this.allDepts.includes(staff.Dept)) {
-              this.allDepts.push(staff.Dept);
-            }            
-          });
-          console.log(this.allDepts)
-        },
-
-    selectDept(dept) {
-        this.selectedDept = dept;
-        console.log('Selected dept:', dept);
-        }
-    },
+      
+      getSkillMatchPercentage() {
+        console.log('Fetching Skill Match Percentage for role:', this.roleName, 'and staff ID:', this.staffId);
+        axios.get(`http://localhost:8000/get_skill_match/${this.roleName}/${this.staffId}`)
+            .then(response => {
+                console.log(response.data);
+                this.roleSkillPercent = parseFloat(response.data.Match_Percentage).toFixed(2);
+            })
+            .catch(error => {
+              console.error(error);
+            });
+      }
+      }
     
+    // validateDepartment() {
+    //     // console.log('Validating department:', this.currDept);
+    //     if (!this.allDepts.includes(this.currDept)) {
+    //         // console.log('Invalid department');
+    //         this.deptError = 'Department does not exist!';
+    //     } else {
+    //         // console.log('Valid department');
+    //         this.deptError = '';
+    //         }
+    //     },
+    
+    // fetchStaffData() {
+    //     axios.get('http://localhost:8000/get_staff_data')
+    //         .then(response => {
+    //             // console.log(response.data[0].Dept);
+    //             this.staffData = response.data;
+    //             this.getUniqueDepts();
+    //         })
+    //         .catch(error => {
+    //             console.error(error);
+    //         });
+    //     },
+
+    //     getUniqueDepts() {
+    //       this.staffData.forEach(staff => {
+    //         if (!this.allDepts.includes(staff.Dept)) {
+    //           this.allDepts.push(staff.Dept);
+    //         }            
+    //       });
+    //       // console.log(this.allDepts)
+    //     },    
   };
   </script>
   

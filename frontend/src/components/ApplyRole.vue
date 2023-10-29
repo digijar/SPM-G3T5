@@ -148,7 +148,7 @@
         fetchStaffData() {
             axios.get('http://localhost:8000/get_staff_data')
                 .then(response => {
-                    // console.log(response.data[0].Dept);
+                    // console.log(response.data);
                     this.staffData = response.data;
                     // this.getUniqueDepts();
                 })
