@@ -118,6 +118,33 @@ def get_role_data():
         return jsonify(role_list)
     except Exception as e:
         return jsonify({"error": str(e)})
+    
+@app.route('/create_new_job_listing', methods=['POST'])
+def create_new_job_listing():
+    try:
+        data = request.json
+
+        # Extract data from the request
+        role_name = data['roleName']
+        role_desc = data['roleDesc']
+        department = data['dept']
+        location = data['location']
+        deadline = data['deadline']
+
+        # Create a new Role object and add it to the database
+        new_role = Role(
+            Role_Name=role_name,
+            Role_Desc=role_desc,
+            Dept=department,
+            Location=location,
+            Deadline=deadline
+        )
+        db.session.add(new_role)
+        db.session.commit()
+
+        return jsonify({"message": "Job listing created successfully"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 # Skill
 class Skill(db.Model):
@@ -188,23 +215,32 @@ def get_roleSkill_data_by_name(role_name):
     except Exception as e:
         return jsonify({"error": str(e)})
 
-    
-@app.route("/create_new_job_listing", methods=["POST"])
-def create_new_job_listing():
+@app.route('/new_role_skill', methods=['POST'])
+def new_role_skill():
     try:
-        # Get the data from the POST request
         data = request.json
-        role_name = data.get("roleName")
-        skill_required = data.get("skillRequired")
 
-        # Create a new entry in the Role_Skill table
-        new_role_skill = Role_Skill(Role_Name=role_name, Skill_Name=skill_required)
+        role_name = data['roleName']
+        skill_name = data['skillName']
+
+        role = Role.query.filter_by(Role_Name=role_name).first()
+        if role is None:
+            return jsonify({"error": "Role not found"}), 404
+
+        skill = Skill.query.filter_by(Skill_Name=skill_name).first()
+        if skill is None:
+            return jsonify({"error": "Skill not found"}), 404
+
+        new_role_skill = Role_Skill(
+            Role_Name=role.Role_Name,
+            Skill_Name=skill.Skill_Name
+        )
         db.session.add(new_role_skill)
         db.session.commit()
 
-        return jsonify({"message": "Job listing created successfully"})
+        return jsonify({"message": "Role_Skill updated successfully"})
     except Exception as e:
-        return jsonify({"error": str(e)})
+        return jsonify({"error": str(e)}), 500
 
 # Applications
 class Applications(db.Model):

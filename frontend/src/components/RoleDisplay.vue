@@ -7,35 +7,39 @@
       </router-link>
     </div>
 
-<!-- Table container -->
-<div class="table-container">
-  <table class="job-listing-table">
-    <thead>
-      <tr>
-        <th>Role Name</th>
-        <th>Role Description</th>
-        <th>Skills Required</th>
-        <th>Deadline</th>
-        <th>Action</th>
-      </tr>
-    </thead>
-    <tbody>
-      <!-- Loop through job listings and display them -->
-      <tr v-for="role in filteredroleData" :key="role.Role_Name">
-        <td>{{ role.Role_Name }}</td>
-        <td>{{ role.Role_Desc }}</td>
-        <td>{{ getSkillName(role.Role_Name) }}</td>
-        <td>{{ getDeadline(role.Role_Name) }}</td>
-        <td>
-          <button class="btn btn-success" @click="openModal_apply(role)">Update Listing</button>
-          <br>
-          <button class="btn btn-info" @click="openModal(role)">More Details</button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-</div>
+    <!-- Table container -->
+    <div class="table-container">
+      <table class="job-listing-table">
+        <thead>
+          <tr>
+            <th>Role Name</th>
+            <th>Role Description</th>
+            <th>Department</th> <!-- Add Department column -->
+            <th>Location</th>   <!-- Add Location column -->
+            <th>Skills Required</th>
+            <th>Deadline</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Loop through job listings and display them -->
+          <tr v-for="role in filteredroleData" :key="role.Role_Name">
+            <td>{{ role.Role_Name }}</td>
+            <td>{{ role.Role_Desc }}</td>
+            <td>{{ role.Dept }}</td>    <!-- Display Department -->
+            <td>{{ role.Location }}</td> <!-- Display Location -->
+            <td>{{ getSkillName(role.Role_Name) }}</td>
+            <td>{{ getDeadline(role.Role_Name) }}</td>
+            <td>
+              <button class="btn btn-success" @click="openModal_apply(role)">Update Listing</button>
+              <br>
+              <button class="btn btn-info" @click="openModal(role)">More Details</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 
 <RoleDetailModal
 :showModal="modalData.showModal"
@@ -96,7 +100,7 @@ this.fetchRoleSkillData();
 
 methods: {
 fetchRoleData() {
-      axios.get('http://localhost:8000/get_role_data')
+      axios.get('http://localhost:8080/get_role_data')
           .then(response => {
               // console.log(response.data);
               this.roleData = response.data;
@@ -107,7 +111,7 @@ fetchRoleData() {
   },
 
   fetchSkillData() {
-      axios.get('http://localhost:8000/get_skill_data')
+      axios.get('http://localhost:8080/get_skill_data')
           .then(response => {
               // console.log(response.data);
               this.skillData = response.data;
@@ -118,7 +122,7 @@ fetchRoleData() {
   },
 
   fetchRoleSkillData() {
-      axios.get('http://localhost:8000/get_roleskill_data')
+      axios.get('http://localhost:8080/get_roleskill_data')
           .then(response => {
               // console.log(response.data);
               this.roleSkillData = response.data;
@@ -129,7 +133,7 @@ fetchRoleData() {
   },
 
   fetchStaffData() {
-      axios.get('http://localhost:8000/get_staff_data')
+      axios.get('http://localhost:8080/get_staff_data')
           .then(response => {
               // console.log(response.data[0].Dept);
               this.staffData = response.data;
@@ -218,43 +222,44 @@ filteredroleData() {
 <style scoped>
 /* component-specific styles here */
 .header {
-display: flex;
-justify-content: space-between;
-align-items: center;
-margin-bottom: 20px;
-padding: 10px; /* padding around header */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 10px; /* padding around header */
 }
 
 .title {
-margin: 0;
+  margin: 0;
 }
 
 .create-button {
-/* padding around button */
-padding: 5px 10px;
+  /* padding around button */
+  padding: 5px 10px;
 }
 
 .table-container {
-max-width: 800px;
-margin: 0 auto;
+  max-width: 1000px; /* Adjust the maximum width as per your requirement */
+  margin: 0 auto;
 }
 
 .job-listing-table {
-border-collapse: collapse;
-width: 100%;
+  border-collapse: collapse;
+  width: 100%;
 }
 
-.job-listing-table th, .job-listing-table td {
-border: 1px solid #ccc;
-padding: 8px;
+.job-listing-table th,
+.job-listing-table td {
+  border: 1px solid #ccc;
+  padding: 8px;
 }
 
 .job-listing-table th {
-background-color: #f2f2f2;
-font-weight: bold;
+  background-color: #f2f2f2;
+  font-weight: bold;
 }
 
 .search-bar {
-  padding:10px;
+  padding: 10px;
 }
 </style>

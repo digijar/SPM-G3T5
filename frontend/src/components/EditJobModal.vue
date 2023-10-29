@@ -26,6 +26,26 @@
               <label for="InputValue_skillReq">Skill Required</label>
             </div>
 
+            <div class="form-check mb-3">
+              <label>Location:</label>
+              <div class="radio-container">
+                <input type="radio" id="remote" class="form-check-input" value="Remote" v-model="location">
+                <label for="remote" class="form-check-label">Remote</label>
+              </div>
+              <div class="radio-container">
+                <input type="radio" id="onSite" class="form-check-input" value="On-Site" v-model="location">
+                <label for="onSite" class="form-check-label">On-Site</label>
+              </div>
+            </div>
+
+            <div class="form-floating mb-3">
+              <select class="form-select" id="InputValue_Dept" v-model="department">
+                <option value="" disabled>Select</option>
+                <option v-for="dept in departments" :key="dept" :value="dept">{{ dept }}</option>
+              </select>
+              <label for="InputValue_Dept">Department</label>
+            </div>
+
             <div class="form-floating mb-3">
               <input type="date" class="form-control" id="InputValue_Deadline" v-model="deadline">
               <label for="InputValue_Deadline">Deadline</label>
@@ -54,8 +74,11 @@ export default {
       roleName: '',
       roleDesc: '',
       skillReq: '',
+      location: '',
+      department: '',
       deadline: '',
       skills: [],
+      departments: [],
     };
   },
 
@@ -82,11 +105,25 @@ export default {
       }
     },
 
+    fetchDepartments() {
+      axios.get('http://localhost:8000/get_role_data')
+        .then(response => {
+          // Extract and populate department options from the response
+          const departmentOptions = response.data.map(role => role.Dept);
+          this.departments = [...new Set(departmentOptions)]; // Remove duplicates
+        })
+        .catch(error => {
+          console.error('Error fetching department data:', error);
+        });
+    },
+
     submitForm() {
       const data = {
         roleName: this.roleName,
         roleDesc: this.roleDesc,
         skillReq: this.skillReq,
+        location: this.location,
+        department: this.department, // Include the selected department
         deadline: this.deadline,
       };
 
@@ -105,6 +142,7 @@ export default {
 
   created() {
     this.fetchRoleSkillData();
+    this.fetchDepartments(); // Fetch department data
   },
 };
 </script>
@@ -114,7 +152,11 @@ export default {
   display: block;
 }
 
-.modal-content {
-  display: flex;
+.form-check {
+  margin-top: 16px;
+}
+
+.form-check-label {
+  margin-left: 8px;
 }
 </style>

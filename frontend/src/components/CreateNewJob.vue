@@ -18,7 +18,7 @@
         <div class="form-group">
           <div class="input-container">
             <label for="RoleDesc" class="label">Role Description:</label>
-            <textarea class="form-control" id="RoleDesc" v-model="roleDesc"></textarea>
+            <textarea class="form-control" id="RoleDesc" v-model="newJob.roleDesc"></textarea>
           </div>
         </div>
 
@@ -34,8 +34,34 @@
 
         <div class="form-group">
           <div class="input-container">
+            <label class="label">Location:</label>
+            <div class="radio-container">
+              <div class="radio-option">
+                <input type="radio" id="remote" value="Remote" v-model="newJob.location">
+                <label for="remote">Remote</label>
+              </div>
+              <div class="radio-option">
+                <input type="radio" id="onSite" value="On-Site" v-model="newJob.location">
+                <label for="onSite">On-Site</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="input-container">
+            <label for="dept" class="label">Department:</label>
+            <select class="form-select" id="dept" v-model="newJob.dept">
+              <option value="" disabled>Select</option>
+              <option v-for="department in departments" :key="department">{{ department }}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="input-container">
             <label for="Deadline" class="label">Deadline:</label>
-            <input type="date" class="form-control" id="Deadline" v-model="deadline">
+            <input type="date" class="form-control" id="Deadline" v-model="newJob.deadline">
           </div>
         </div>
 
@@ -53,18 +79,23 @@ export default {
     return {
       newJob: {
         roleName: '',
+        roleDesc: '',
         skillRequired: '',
+        location: '',
+        deadline: '',
       },
       skills: [], // Add a new data property for skills
+      departments: [], // Add a new data property for departments
     };
   },
   created() {
-    // Fetch skill data when the component is created
+    // Fetch skill and department data when the component is created
     this.fetchSkills();
+    this.fetchDepartments();
   },
   methods: {
     fetchSkills() {
-      axios.get('http://localhost:8000/get_skill_data')
+      axios.get('http://localhost:8080/get_skill_data')
         .then(response => {
           this.skills = response.data;
         })
@@ -72,30 +103,63 @@ export default {
           console.error('Error fetching skill data:', error);
         });
     },
-    submitJobListing() {
-      // Prepare the data for submission
-      const formData = {
-        roleName: this.newJob.roleName,
-        skillRequired: this.newJob.skillRequired,
-      };
-
-      // Send the data to the backend using the appropriate API endpoint
-      axios.post('http://localhost:8000/create_new_job_listing', formData)
+    fetchDepartments() {
+      axios.get('http://localhost:8080/get_role_data')
         .then(response => {
-          console.log('Data submitted successfully:', response.data);
-          // Reset form fields after successful submission if needed
-          this.newJob = {
-            roleName: '',
-            skillRequired: '',
-          };
+          // Extract and populate department options from the response
+          const departmentOptions = response.data.map(role => role.Dept);
+          this.departments = [...new Set(departmentOptions)]; // Remove duplicates
         })
         .catch(error => {
-          console.error('Error submitting data:', error);
+          console.error('Error fetching department data:', error);
         });
     },
+    submitJobListing() {
+  const formData = {
+    roleName: this.newJob.roleName,
+    roleDesc: this.newJob.roleDesc,
+    dept: this.newJob.dept,
+    location: this.newJob.location,
+    deadline: this.newJob.deadline,
+    skillRequired: this.newJob.skillRequired, // Include skillRequired
+  };
+
+  axios.post('http://localhost:8080/create_new_job_listing', formData)
+    .then(response => {
+      console.log('Data submitted successfully:', response.data);
+      // Reset form fields after successful submission if needed
+      this.newJob = {
+        roleName: '',
+        roleDesc: '',
+        skillRequired: '',
+        location: '',
+        dept: '',
+        deadline: '',
+      };
+
+      // After creating the job listing, update the Role_Skill table
+      const roleSkillData = {
+        roleName: formData.roleName,
+        skillName: formData.skillRequired, // Use the selected skill
+      };
+
+      axios.post('http://localhost:8080/new_role_skill', roleSkillData)
+        .then(response => {
+          console.log('Role_Skill created successfully:', response.data);
+        })
+        .catch(error => {
+          console.error('Error updating Role_Skill:', error);
+        });
+    })
+    .catch(error => {
+      console.error('Error submitting data:', error);
+    });
+}
+
   },
 };
 </script>
+
 
 <style scoped>
 .header {
