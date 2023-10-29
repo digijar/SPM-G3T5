@@ -69,6 +69,7 @@
             }
             else {
                 alert("You have successfully applied for the role of " + this.roleName);
+                this.submitApplication();
                 this.$emit('close');
             }
         }
@@ -116,7 +117,32 @@
             .catch(error => {
               console.error(error);
             });
-      }
+      },
+
+    submitApplication() {
+      // Prepare the data for submission
+      const formData = {
+        role_name: this.roleName,
+        staff_id: this.staffId,
+        current_dept: this.currDept,
+        skill_match: this.roleSkillPercent,
+      };
+
+      // Send the data to the backend using the appropriate API endpoint
+      axios.post('http://localhost:8000/create_new_application', formData)
+        .then(response => {
+          console.log('Data submitted successfully:', response.data);
+          // Reset form fields after successful submission if needed
+          this.roleName = '';
+          this.staffId = '';
+          this.currDept = '';
+          this.skill_match = '';
+        })
+        .catch(error => {
+          console.error('Error submitting data:', error);
+        });
+    },
+      
       }
     
     // validateDepartment() {
