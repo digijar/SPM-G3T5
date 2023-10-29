@@ -209,7 +209,7 @@ def create_new_job_listing():
 # Applications
 class Applications(db.Model):
     __tablename__ = 'Applications'
-    Application_ID = db.Column(db.Integer, primary_key=True)
+    Application_ID = db.Column(db.Integer, primary_key=True, autoincrement=True)
     Role_Name = db.Column(db.String(255))
     Staff_ID = db.Column(db.Integer)
     Current_Dept = db.Column(db.String(255))
@@ -231,6 +231,26 @@ def get_applications_data():
             })
         app.logger.info(applications_list)
         return jsonify(applications_list)
+    except Exception as e:
+        return jsonify({"error": str(e)})
+
+@app.route("/create_new_application", methods=["POST"])
+def create_new_application():
+    try:
+        # Get the data from the POST request
+        data = request.json
+        role_name = data.get("role_name")
+        staff_id = data.get("staff_id")
+        current_dept = data.get('current_dept')
+        skill_match = data.get('skill_match')
+        
+
+        # Create a new entry in the Application table
+        new_application = Applications(Role_Name=role_name, Staff_ID=staff_id, Current_Dept=current_dept, Skills_Match_Percentage=skill_match)
+        db.session.add(new_application)
+        db.session.commit()
+
+        return jsonify({"message": "Application created successfully"})
     except Exception as e:
         return jsonify({"error": str(e)})
 
