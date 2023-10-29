@@ -151,9 +151,18 @@ export default {
       const column = this.sortColumn;
       const direction = this.sortDirection === 'asc' ? 1 : -1;
       return this.filteredApplications.sort((a, b) => {
-        if (a[column] < b[column]) return -1 * direction;
-        if (a[column] > b[column]) return 1 * direction;
-        return 0;
+        if (column === 'Skills_Match_Percentage') {
+          // Convert the Skills_Match_Percentage values to numbers before sorting
+          const aPercentage = parseFloat(a[column]);
+          const bPercentage = parseFloat(b[column]);
+          if (aPercentage < bPercentage) return -1 * direction;
+          if (aPercentage > bPercentage) return 1 * direction;
+          return 0;
+        } else {
+          if (a[column] < b[column]) return -1 * direction;
+          if (a[column] > b[column]) return 1 * direction;
+          return 0;
+        }
       });
     },
     uniqueRoleNames() {
