@@ -74,7 +74,7 @@
 
     <!-- Popup container -->
     <div class="popup-container" v-if="selectedApplication">
-      <div class="popup card">
+      <div class="popup card" style="max-height: 80vh; overflow-y: auto;">
         <div class="card-body">
           <h4 class="card-title"> Job Application for {{ selectedApplication.Role_Name }} </h4>
           <p class="card-text">Application ID: {{ selectedApplication.Application_ID }}</p>
