@@ -7,6 +7,9 @@
       <!-- <button @click="fetchRoleData" class="btn btn-info">Fetch Role Data</button>
       <button @click="fetchSkillData" class="btn btn-info">Fetch Skill Data</button>
       <button @click="fetchRoleSkillData" class="btn btn-info">Fetch roleSkill Data</button> -->
+      <button @click="" class="btn btn-info">Login as Mary Fu</button>
+
+      <br><br>
       <div class="container mb-3">
         <input type="text" v-model="searchQuery" placeholder="Search by role name">
         <DeptFilter :allDepts="uniqueDepts" :selectedDept="selectedDept" :selectedLocation="selectedLocation" @update:selectedDept="selectedDept = $event" @update:selectedLocation="selectedLocation = $event" />
@@ -70,6 +73,7 @@
   import RoleDetailModal from './RoleDetailModal.vue';
   import ConfirmApplyModal from './ConfirmApplyModal.vue';
   import DeptFilter from './DeptFilter.vue';
+  import LoginModal from './LoginModal.vue';
 
   export default {
     name: 'ApplyRole',
@@ -78,6 +82,7 @@
       RoleDetailModal,
       ConfirmApplyModal,
       DeptFilter,
+      LoginModal,
     },
 
     data() {
@@ -88,6 +93,8 @@
         roleSkills: [],
         formattedSkills: '',
         staffData: [],
+
+        loginStaffData: [],
 
         searchQuery: '',
         allDepts: [],
