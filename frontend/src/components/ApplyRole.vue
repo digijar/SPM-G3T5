@@ -30,7 +30,11 @@
             <tr v-for="role in filteredroleData" :key="role.Role_Name">
               <td>{{ role.Role_Name }}</td>
               <td>{{ role.Role_Desc.slice(0, 150) + "..." }}</td>
-              <td>{{ getRoleSkills(role.Role_Name) }}</td>
+              <td>
+                <ul>
+                  <li v-for="skill in getRoleSkills(role.Role_Name)" :key="skill">{{ skill }}</li>
+                </ul>
+              </td>
               <td>{{ role.Dept }}</td>
               <td>{{ role.Location }}</td>
               <td>
@@ -112,6 +116,7 @@
     },
 
     methods: {
+
       fetchRoleData() {
             axios.get('http://localhost:8000/get_role_data')
                 .then(response => {
@@ -165,26 +170,19 @@
             this.selectedDept = dept;
           },
 
-        getRoleSkills(roleName) {
-          axios.get(`http://localhost:8000/get_roleskill_data_by_name/${roleName}`)
-            .then(response => {
-              // Map the response data to this.roleSkills
-              this.roleSkills = response.data;
+          getRoleSkills(roleName) {
+            const role = this.roleData.find(role => role.Role_Name === roleName);
+            if (role) {
+              const roleSkills = this.roleSkillData
+                .filter(rs => rs.Role_Name === role.Role_Name)
+                .map(rs => rs.Skill_Name);
+              if (roleSkills.length > 0) {
+                return roleSkills;
+              }
+            }
+            return [];
+          },
 
-              // Format the Skill_Names into this.formattedSkills
-              this.formattedSkills = this.roleSkills
-                .map(item => item.Skill_Name)  // Extract Skill_Names
-                .join(', ');  // Join them with a comma
-
-              // console.log('Role Skills:', this.roleSkills);
-              // console.log('Formatted Skills:', this.formattedSkills);
-              return this.formattedSkills
-            })
-            .catch(error => {
-              console.error(error);
-            });
-            return ''
-        },
 
         // const role = this.roleData.find(role => role.Role_Name === roleName);
         // if (role) {
@@ -273,7 +271,7 @@
   }
   
   .table-container {
-    max-width: 800px;
+    max-width: 1000px;
     margin: 0 auto;
   }
   
