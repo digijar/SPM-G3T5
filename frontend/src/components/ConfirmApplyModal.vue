@@ -13,8 +13,22 @@
             <label for="InputValue_StaffID">Your Staff ID</label>
             <div class="invalid-feedback" v-if="staffIdError">{{ staffIdError }}</div>
             </form>
+            <p>Name: <b>{{ staffName }}</b></p>
             <p>Current Department: <b>{{ currDept }}</b></p>
             <p>Percentage of Skills Matched: <b>{{ roleSkillPercent }}</b></p>
+            <p style="color: red;">Missing Skills:</p>
+            <ul>
+              <li v-for="(skill, index) in staff_roleSkills.Missing_Skills" :key="index">
+                {{ skill }}
+              </li>
+            </ul>
+
+            <p style="color: green;">Skills that you have:</p>
+            <ul>
+              <li v-for="(skill, index) in staff_roleSkills.Common_Skills" :key="index">
+                {{ skill }}
+              </li>
+            </ul>
           </div>
           <div class="modal-footer">
             <button @click="closeModal" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -41,11 +55,13 @@
     data() {
       return {
         staffId: '',
+        staffName: '',
         staffIdError: '', 
         currDept: '',
         allDepts: [],
         staffIdData: {},
         roleSkillPercent: '',
+        staff_roleSkills: [],
       };
     },
 
@@ -53,6 +69,7 @@
       closeModal() {
         this.$emit('close');
         this.staffId = '';
+        this.staffName = '';
         this.currDept = '';
         this.roleSkillPercent = '';
       },
@@ -98,8 +115,10 @@
                 } else {
                     this.staffIdError = '';
                     this.staffIdData = response.data;
+                    this.staffName = this.staffIdData.Staff_FName + " " + this.staffIdData.Staff_LName;
                     this.currDept = this.staffIdData.Dept;
                     this.getSkillMatchPercentage();
+                    this.getMissingSkills();
                 }
             })
             .catch(error => {
@@ -113,6 +132,18 @@
             .then(response => {
                 console.log(response.data);
                 this.roleSkillPercent = parseFloat(response.data.Match_Percentage).toFixed(2);
+            })
+            .catch(error => {
+              console.error(error);
+            });
+      },
+
+      getMissingSkills() {
+        console.log('Getting missing skills for:', this.roleName, 'and staff ID:', this.staffId);
+        axios.get(`http://localhost:8000/get_missing_skills/${this.roleName}/${this.staffId}`)
+            .then(response => {
+                console.log(response.data);
+                this.staff_roleSkills = response.data;
             })
             .catch(error => {
               console.error(error);
