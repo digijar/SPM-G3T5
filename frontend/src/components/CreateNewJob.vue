@@ -95,7 +95,7 @@ export default {
   },
   methods: {
     fetchSkills() {
-      axios.get('http://localhost:8080/get_skill_data')
+      axios.get('http://localhost:8000/get_skill_data')
         .then(response => {
           this.skills = response.data;
         })
@@ -104,7 +104,7 @@ export default {
         });
     },
     fetchDepartments() {
-      axios.get('http://localhost:8080/get_role_data')
+      axios.get('http://localhost:8000/get_role_data')
         .then(response => {
           // Extract and populate department options from the response
           const departmentOptions = response.data.map(role => role.Dept);
@@ -124,7 +124,7 @@ export default {
     skillRequired: this.newJob.skillRequired, // Include skillRequired
   };
 
-  axios.post('http://localhost:8080/create_new_job_listing', formData)
+  axios.post('http://localhost:8000/create_new_job_listing', formData)
     .then(response => {
       console.log('Data submitted successfully:', response.data);
       // Reset form fields after successful submission if needed
@@ -143,7 +143,7 @@ export default {
         skillName: formData.skillRequired, // Use the selected skill
       };
 
-      axios.post('http://localhost:8080/new_role_skill', roleSkillData)
+      axios.post('http://localhost:8000/new_role_skill', roleSkillData)
         .then(response => {
           console.log('Role_Skill created successfully:', response.data);
         })
