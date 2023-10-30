@@ -55,7 +55,6 @@
           <tr
             v-for="(application, index) in sortedApplications"
             :key="application.Application_ID"
-            @click="showPopup(application)"
           >
             <td class="text-center">{{ application.Application_ID }}</td>
             <td class="text-center">{{ application.Role_Name }}</td>
