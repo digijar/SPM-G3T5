@@ -170,9 +170,9 @@ def get_skill_data():
 # Role_Skill
 class Role_Skill(db.Model):
     __tablename__ = 'Role_Skill'
-    Role_Skill_ID = db.Column(db.String(255), primary_key=True)
-    Role_Name = db.Column(db.String(255), db.ForeignKey('Role.Role_Name'))
-    Skill_Name = db.Column(db.String(255), db.ForeignKey('Skill.Skill_Name'))
+    # Role_Skill_ID = db.Column(db.String(255), primary_key=True)
+    Role_Name = db.Column(db.String(255), db.ForeignKey('Role.Role_Name'), primary_key=True)
+    Skill_Name = db.Column(db.String(255), db.ForeignKey('Skill.Skill_Name'), primary_key=True)
 
 @app.route("/get_roleskill_data", methods=["GET"])
 def get_roleSkill_data():
