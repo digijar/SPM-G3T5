@@ -77,7 +77,6 @@
 import axios from 'axios';
 import DisplayModal from "./DisplayModal.vue";
 
-
 export default {
   components: {
     DisplayModal,
@@ -124,61 +123,77 @@ export default {
     },
     submitJobListing() {
       if (
-    !this.newJob.roleName ||
-    !this.newJob.roleDesc ||
-    !this.newJob.skillRequired ||
-    !this.newJob.location ||
-    !this.newJob.dept ||
-    !this.newJob.deadline
-  ) {
-    this.displayMessage = 'Please fill in all form fields    ';
-    this.showDisplayPopup = true;
-    return;
-  }
+        !this.newJob.roleName ||
+        !this.newJob.roleDesc ||
+        !this.newJob.skillRequired ||
+        !this.newJob.location ||
+        !this.newJob.dept ||
+        !this.newJob.deadline
+      ) {
+        this.displayMessage = 'Please fill in all form fields   ';
+        this.showDisplayPopup = true;
+        return;
+      }
 
-  const formData = {
-    roleName: this.newJob.roleName,
-    roleDesc: this.newJob.roleDesc,
-    dept: this.newJob.dept,
-    location: this.newJob.location,
-    deadline: this.newJob.deadline,
-    skillRequired: this.newJob.skillRequired, // Include skillRequired
-  };
+      // Check if the role name already exists in the database
+      axios.get('http://localhost:8000/check_role_exists', {
+        params: { roleName: this.newJob.roleName }
+      })
+      .then(response => {
+        if (response.data.exists) {
+          // Role name already exists
+          this.displayMessage = 'Role Name already exists   ';
+          this.showDisplayPopup = true;
+          return;
+        } else {
+          // Role name doesn't exist, proceed with submission
+          const formData = {
+            roleName: this.newJob.roleName,
+            roleDesc: this.newJob.roleDesc,
+            dept: this.newJob.dept,
+            location: this.newJob.location,
+            deadline: this.newJob.deadline,
+            skillRequired: this.newJob.skillRequired,
+          };
 
-  axios.post('http://localhost:8000/create_new_job_listing', formData)
-    .then(response => {
-      console.log('Data submitted successfully:', response.data);
-      // Reset form fields after successful submission if needed
-      this.newJob = {
-        roleName: '',
-        roleDesc: '',
-        skillRequired: '',
-        location: '',
-        dept: '',
-        deadline: '',
-      };
+          axios.post('http://localhost:8000/create_new_job_listing', formData)
+          .then(response => {
+            console.log('Data submitted successfully:', response.data);
+            // Reset form fields after successful submission if needed
+            this.newJob = {
+              roleName: '',
+              roleDesc: '',
+              skillRequired: '',
+              location: '',
+              dept: '',
+              deadline: '',
+            };
 
-      // After creating the job listing, update the Role_Skill table
-      const roleSkillData = {
-        roleName: formData.roleName,
-        skillName: formData.skillRequired, // Use the selected skill
-      };
+            // After creating the job listing, update the Role_Skill table
+            const roleSkillData = {
+              roleName: formData.roleName,
+              skillName: formData.skillRequired,
+            };
 
-      axios.post('http://localhost:8000/new_role_skill', roleSkillData)
-        .then(response => {
-          console.log('Role_Skill created successfully:', response.data);
-        })
-        .catch(error => {
-          console.error('Error updating Role_Skill:', error);
-        });
+            axios.post('http://localhost:8000/new_role_skill', roleSkillData)
+            .then(response => {
+              console.log('Role_Skill created successfully:', response.data);
+            })
+            .catch(error => {
+              console.error('Error updating Role_Skill:', error);
+            });
 
-      this.displayMessage = "Form submitted successfully   ";
-      this.showDisplayPopup = true;
-    })
-
-    .catch(error => {
-      console.error('Error submitting data:', error);
-    });
+            this.displayMessage = "Form submitted successfully   ";
+            this.showDisplayPopup = true;
+          })
+          .catch(error => {
+            console.error('Error submitting data:', error);
+          });
+        }
+      })
+      .catch(error => {
+        console.error('Error checking role existence:', error);
+      });
     },
     closeDisplayPopup() {
       this.showDisplayPopup = false;

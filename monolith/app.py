@@ -101,6 +101,18 @@ class Role(db.Model):
     Location  = db.Column(db.Enum('Remote', 'On-Site'))
     Deadline  = db.Column(db.Date)
 
+def check_role_exists(role_name):
+    role = Role.query.filter_by(Role_Name=role_name).first()
+    return role is not None
+
+@app.route('/check_role_exists', methods=['GET'])
+def check_role_exists_route():
+    role_name = request.args.get('roleName')
+    
+    exists = check_role_exists(role_name)
+    
+    return jsonify({'exists': exists})
+
 @app.route("/get_role_data", methods=["GET"])
 def get_role_data():
     try:
