@@ -11,7 +11,7 @@
         <div class="form-group">
           <div class="input-container">
             <label for="roleName" class="label">Role Name:</label>
-            <input type="text" id="roleName" v-model="newJob.roleName" class="form-control" required>
+            <input type="text" id="roleName" v-model="newJob.roleName" class="form-control">
           </div>
         </div>
 
@@ -68,13 +68,20 @@
         <button type="submit" class="submit-button">Submit</button>
       </form>
     </div>
+
+    <display-modal :display-message="displayMessage" :show-modal="showDisplayPopup" @close="closeDisplayPopup" />
   </div>
 </template>
 
 <script>
 import axios from 'axios';
+import DisplayModal from "./DisplayModal.vue";
+
 
 export default {
+  components: {
+    DisplayModal,
+  },
   data() {
     return {
       newJob: {
@@ -84,12 +91,13 @@ export default {
         location: '',
         deadline: '',
       },
-      skills: [], // Add a new data property for skills
-      departments: [], // Add a new data property for departments
+      skills: [],
+      departments: [], 
+      displayMessage: "",
+      showDisplayPopup: false,
     };
   },
   created() {
-    // Fetch skill and department data when the component is created
     this.fetchSkills();
     this.fetchDepartments();
   },
@@ -115,6 +123,19 @@ export default {
         });
     },
     submitJobListing() {
+      if (
+    !this.newJob.roleName ||
+    !this.newJob.roleDesc ||
+    !this.newJob.skillRequired ||
+    !this.newJob.location ||
+    !this.newJob.dept ||
+    !this.newJob.deadline
+  ) {
+    this.displayMessage = 'Please fill in all form fields    ';
+    this.showDisplayPopup = true;
+    return;
+  }
+
   const formData = {
     roleName: this.newJob.roleName,
     roleDesc: this.newJob.roleDesc,
@@ -150,11 +171,18 @@ export default {
         .catch(error => {
           console.error('Error updating Role_Skill:', error);
         });
+
+      this.displayMessage = "Form submitted successfully   ";
+      this.showDisplayPopup = true;
     })
+
     .catch(error => {
       console.error('Error submitting data:', error);
     });
-}
+    },
+    closeDisplayPopup() {
+      this.showDisplayPopup = false;
+    },
 
   },
 };
