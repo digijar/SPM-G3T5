@@ -51,9 +51,10 @@
 />
 
 <EditJobModal
-:showModal="modalData_apply.showModal"
-:roleName="modalData_apply.roleName"
-@close="modalData_apply.showModal = false"
+  :showModal="modalData_apply.showModal"
+  :roleName="modalData_apply.roleName"
+  :refresh="modalData_apply.refresh"
+  @close="modalData_apply.showModal = false"
 />
 
 </template>
@@ -205,6 +206,11 @@ fetchRoleData() {
       this.modalData_apply.showModal = true;
       this.modalData_apply.roleName = role.Role_Name;
     },
+
+    onModalClose() {
+    // Reset the modal's refresh property
+    this.modalData_apply.refresh = false;
+  },
 
 
 },

@@ -9,7 +9,7 @@
         <div class="modal-body">
           <form @submit.prevent="submitForm">
             <div class="form-floating mb-3">
-              <input type="text" class="form-control" id="InputValue_RoleName" v-model="roleName">
+              <input type="text" class="form-control" id="InputValue_RoleName" v-model="newroleName">
               <label for="InputValue_RoleName">Role Name</label>
             </div>
 
@@ -71,7 +71,7 @@ export default {
 
   data() {
     return {
-      roleName: '',
+      newroleName: '',
       roleDesc: '',
       skillReq: '',
       location: '',
@@ -117,27 +117,39 @@ export default {
         });
     },
 
-    submitForm() {
-      const data = {
-        roleName: this.roleName,
-        roleDesc: this.roleDesc,
-        skillReq: this.skillReq,
-        location: this.location,
-        department: this.department, // Include the selected department
-        deadline: this.deadline,
-      };
+    async submitForm() {
+  const data = {
+    Role_Desc: this.roleDesc,
+    Skill_Name: this.skillReq,
+    Location: this.location,
+    Dept: this.department,
+    Deadline: this.deadline,
+  };
 
-      // Send PUT request to API endpoint
-      axios.put('api_endpoint_here', data)
-        .then(response => {
-          console.log(response.data);
-        })
-        .catch(error => {
-          console.error(error);
-        });
+  try {
+    // Send PUT request to update the "Role" table
+    await axios.put(`http://localhost:8000/update_role/${this.roleName}`, data);
 
-      this.$emit('close');
-    },
+    // Update the "Role_Skill" table
+    await axios.put(`http://localhost:8000/update_roleskill/${this.roleName}`, {
+      Skill_Name: this.skillReq,
+    });
+
+    // Clear the form fields
+    this.newroleName = '';
+    this.roleDesc = '';
+    this.skillReq = '';
+    this.location = '';
+    this.department = '';
+    this.deadline = '';
+
+    // Close the modal after successful update
+    this.$emit('close');
+  } catch (error) {
+    console.error(error);
+  }
+},
+
   },
 
   created() {
@@ -146,6 +158,7 @@ export default {
   },
 };
 </script>
+
 
 <style scoped>
 .modal {

@@ -157,6 +157,24 @@ def create_new_job_listing():
         return jsonify({"message": "Job listing created successfully"})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+@app.route('/update_role/<role_name>', methods=['PUT'])
+def update_role(role_name):
+    data = request.json
+    role = Role.query.get(role_name)
+    if not role:
+        return jsonify({'message': 'Role not found'}), 404
+    
+    # Update the role details based on the data received
+    # role.Role_Name = data['Role_Name'] 
+    role.Role_Desc = data['Role_Desc']
+    role.Skill_Name = data['Skill_Name']
+    role.Location = data['Location']
+    role.Dept = data['Dept']
+    role.Deadline = data['Deadline']
+    
+    db.session.commit()
+    return jsonify({'message': 'Role updated successfully'}), 200
 
 # Skill
 class Skill(db.Model):
@@ -253,6 +271,19 @@ def new_role_skill():
         return jsonify({"message": "Role_Skill updated successfully"})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+@app.route('/update_roleskill/<role_name>', methods=['PUT'])
+def update_roleskill(role_name):
+    data = request.json
+    role_skill = Role_Skill.query.filter_by(Role_Name=role_name).first()
+    if not role_skill:
+        return jsonify({'message': 'Role_Skill not found'}), 404
+    
+    # Update the skill associated with the role
+    role_skill.Skill_Name = data['Skill_Name']
+    
+    db.session.commit()
+    return jsonify({'message': 'Role_Skill updated successfully'}), 200
 
 # Applications
 class Applications(db.Model):
