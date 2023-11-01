@@ -144,6 +144,7 @@ export default {
     this.deadline = '';
 
     // Close the modal after successful update
+    this.$emit('form-submitted');
     this.$emit('close');
   } catch (error) {
     console.error(error);

@@ -55,6 +55,7 @@
   :roleName="modalData_apply.roleName"
   :refresh="modalData_apply.refresh"
   @close="modalData_apply.showModal = false"
+  @form-submitted="handleFormSubmitted"
 />
 
 </template>
@@ -207,9 +208,8 @@ fetchRoleData() {
       this.modalData_apply.roleName = role.Role_Name;
     },
 
-    onModalClose() {
-    // Reset the modal's refresh property
-    this.modalData_apply.refresh = false;
+    handleFormSubmitted() {
+    this.fetchRoleData();
   },
 
 
