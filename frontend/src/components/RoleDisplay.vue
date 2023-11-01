@@ -58,17 +58,24 @@
   @form-submitted="handleFormSubmitted"
 />
 
+<UpdateSuccessModal
+  :showModal="modalData_updateSuccess.showModal"
+  @close="modalData_updateSuccess.showModal = false"
+/>
+
 </template>
 
 <script>
 import axios from 'axios';
 import RoleDetailModal from './RoleDetailModal.vue';
 import EditJobModal from './EditJobModal.vue';
+import UpdateSuccessModal from './UpdateSuccessModal.vue';
 
 export default {
 components: {
 RoleDetailModal,
-EditJobModal
+EditJobModal,
+UpdateSuccessModal
 },
 
 data() {
@@ -89,6 +96,9 @@ return {
   modalData_apply: {
     showModal: false,
     roleName: '',
+    },
+  modalData_updateSuccess: {
+    showModal: false,
     },
 };
 },
@@ -210,6 +220,8 @@ fetchRoleData() {
 
     handleFormSubmitted() {
     this.fetchRoleData();
+    this.fetchRoleSkillData();
+    this.modalData_updateSuccess.showModal = true;
   },
 
 

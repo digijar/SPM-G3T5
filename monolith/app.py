@@ -168,7 +168,7 @@ def update_role(role_name):
     # Update the role details based on the data received
     # role.Role_Name = data['Role_Name'] 
     role.Role_Desc = data['Role_Desc']
-    role.Skill_Name = data['Skill_Name']
+    # role.Skill_Name = data['Skill_Name']
     role.Location = data['Location']
     role.Dept = data['Dept']
     role.Deadline = data['Deadline']
