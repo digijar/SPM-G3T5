@@ -8,10 +8,10 @@
         </div>
         <div class="modal-body">
           <form @submit.prevent="submitForm">
-            <div class="form-floating mb-3">
+            <!-- <div class="form-floating mb-3">
               <input type="text" class="form-control" id="InputValue_RoleName" v-model="newroleName">
               <label for="InputValue_RoleName">Role Name</label>
-            </div>
+            </div> -->
 
             <div class="form-floating mb-3">
               <textarea class="form-control" id="InputValue_RoleDesc" v-model="roleDesc"></textarea>
@@ -71,7 +71,7 @@ export default {
 
   data() {
     return {
-      newroleName: '',
+      // newroleName: '',
       roleDesc: '',
       skillReq: [], // Store selected skills as an array
       location: '',
