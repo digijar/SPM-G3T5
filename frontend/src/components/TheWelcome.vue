@@ -21,9 +21,9 @@
       <button class="btn btn-success">Regular Staff</button>
     </router-link>
 
-    <router-link to="/testDB">
+    <!-- <router-link to="/testDB">
       <button class="btn btn-info">Test DB CRUD</button>
-    </router-link>
+    </router-link> -->
       
   </div>
 </template>

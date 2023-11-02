@@ -3,7 +3,7 @@
     <div class="search-bar">
       <input type="text" v-model="searchQuery" placeholder="Search by role name">
       <router-link to="/hrstaff/newjoblist" class="create-button">
-        <button>Create a New Role Listing</button>
+        <button class="btn btn-primary">Create a New Role Listing</button>
       </router-link>
     </div>
 
@@ -25,10 +25,14 @@
           <!-- Loop through job listings and display them -->
           <tr v-for="role in filteredroleData" :key="role.Role_Name">
             <td>{{ role.Role_Name }}</td>
-            <td>{{ role.Role_Desc }}</td>
+            <td>{{ role.Role_Desc.slice(0, 150) + "..."}}</td>
             <td>{{ role.Dept }}</td>    <!-- Display Department -->
             <td>{{ role.Location }}</td> <!-- Display Location -->
-            <td>{{ getSkillName(role.Role_Name) }}</td>
+            <td>
+              <ul>
+                <li v-for="skill in getRoleSkills(role.Role_Name)" :key="skill">{{ skill }}</li>
+              </ul>
+            </td>
             <td>{{ getDeadline(role.Role_Name) }}</td>
             <td>
               <button class="btn btn-success" @click="openModal_apply(role)">Update Listing</button>
@@ -42,12 +46,11 @@
   </div>
 
 <RoleDetailModal
-:showModal="modalData.showModal"
-:roleName="modalData.roleName"
-:roleDescription="modalData.roleDescription"
-:skillName="modalData.skillName"
-:skillDescription="modalData.skillDescription"
-@close="modalData.showModal = false"
+  :showModal="modalData.showModal"
+  :roleName="modalData.roleName"
+  :roleDescription="modalData.roleDescription"
+  :skills="modalData.skills"
+  @close="modalData.showModal = false"
 />
 
 <EditJobModal
@@ -90,8 +93,7 @@ return {
     showModal: false,
     roleName: '',
     roleDescription: '',
-    skillName: '',
-    skillDescription: '',
+    skills: [],
     },
   modalData_apply: {
     showModal: false,
@@ -112,15 +114,18 @@ this.fetchRoleSkillData();
 
 methods: {
 fetchRoleData() {
-      axios.get('http://localhost:8000/get_role_data')
-          .then(response => {
-              // console.log(response.data);
-              this.roleData = response.data;
-          })
-          .catch(error => {
-              console.error(error);
-          });
-  },
+  axios.get('http://localhost:8000/get_role_data')
+    .then(response => {
+      // Sort the data by Deadline in ascending order (earliest first)
+      response.data.sort((a, b) => new Date(a.Deadline) - new Date(b.Deadline));
+      // Reverse the sorted array to have later deadlines at the front
+      this.roleData = response.data.reverse();
+    })
+    .catch(error => {
+      console.error(error);
+    });
+},
+
 
   fetchSkillData() {
       axios.get('http://localhost:8000/get_skill_data')
@@ -186,31 +191,43 @@ fetchRoleData() {
 
     getDeadline(roleName) {
       const role = this.roleData.find(role => role.Role_Name === roleName);
-  if (role) {
-    if (role.Deadline) {
-      // Parse the date string
-      const deadlineDate = new Date(role.Deadline);
+      if (role) {
+        if (role.Deadline) {
+          // Parse the date string
+          const deadlineDate = new Date(role.Deadline);
 
-      // Extract day, month, and year
-      const day = String(deadlineDate.getDate()).padStart(2, '0');
-      const month = String(deadlineDate.getMonth() + 1).padStart(2, '0'); // Month is zero-based
-      const year = deadlineDate.getFullYear();
+          // Extract day, month, and year
+          const day = String(deadlineDate.getDate()).padStart(2, '0');
+          const month = String(deadlineDate.getMonth() + 1).padStart(2, '0'); // Month is zero-based
+          const year = deadlineDate.getFullYear();
 
-      // Create the formatted date string
-      const formattedDate = `${day}-${month}-${year}`;
+          // Create the formatted date string
+          const formattedDate = `${day}-${month}-${year}`;
 
-      return formattedDate;
-    }
-  }
-  return '';
-},
+          return formattedDate;
+        }
+      }
+      return '';
+    },
+
+    getRoleSkills(roleName) {
+      const role = this.roleData.find(role => role.Role_Name === roleName);
+      if (role) {
+        const roleSkills = this.roleSkillData
+          .filter(rs => rs.Role_Name === role.Role_Name)
+          .map(rs => rs.Skill_Name);
+        if (roleSkills.length > 0) {
+          return roleSkills;
+        }
+      }
+      return [];
+    },
 
     openModal(role) {
       this.modalData.showModal = true;
       this.modalData.roleName = role.Role_Name;
       this.modalData.roleDescription = role.Role_Desc;
-      this.modalData.skillName = this.getSkillName(role.Role_Name);
-      this.modalData.skillDescription = this.getSkillDescription(role.Role_Name);
+      this.modalData.skills = this.getRoleSkills(role.Role_Name);
     },
 
     openModal_apply(role) {
@@ -257,7 +274,7 @@ filteredroleData() {
 }
 
 .table-container {
-  max-width: 1000px; /* Adjust the maximum width as per your requirement */
+  max-width: 1200px; /* Adjust the maximum width as per your requirement */
   margin: 0 auto;
 }
 

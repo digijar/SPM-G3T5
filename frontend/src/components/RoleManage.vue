@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="header">
-      <h1 class="title">Job Listing Management</h1>
+      <h1 class="title">Role Listing Management</h1>
     </div>
   </div>
 </template>
