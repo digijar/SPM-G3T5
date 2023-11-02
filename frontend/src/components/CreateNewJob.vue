@@ -25,7 +25,7 @@
         <div class="form-group">
           <div class="input-container">
             <label for="skillRequired" class="label">Skill Required:</label>
-            <select class="form-select" id="skillRequired" v-model="newJob.skillRequired">
+            <select class="form-select" id="skillRequired" v-model="newJob.skillsRequired" multiple>
               <option value="" disabled>Select</option>
               <option v-for="skill in skills" :key="skill.Skill_Name" :value="skill.Skill_Name">{{ skill.Skill_Name }}</option>
             </select>
@@ -86,7 +86,7 @@ export default {
       newJob: {
         roleName: '',
         roleDesc: '',
-        skillRequired: '',
+        skillsRequired: [],
         location: '',
         deadline: '',
       },
@@ -102,7 +102,7 @@ export default {
   },
   methods: {
     fetchSkills() {
-      axios.get('http://localhost:8000/get_skill_data')
+      axios.get('http://localhost:8080/get_skill_data')
         .then(response => {
           this.skills = response.data;
         })
@@ -111,7 +111,7 @@ export default {
         });
     },
     fetchDepartments() {
-      axios.get('http://localhost:8000/get_role_data')
+      axios.get('http://localhost:8080/get_role_data')
         .then(response => {
           // Extract and populate department options from the response
           const departmentOptions = response.data.map(role => role.Dept);
@@ -122,79 +122,79 @@ export default {
         });
     },
     submitJobListing() {
-      if (
-        !this.newJob.roleName ||
-        !this.newJob.roleDesc ||
-        !this.newJob.skillRequired ||
-        !this.newJob.location ||
-        !this.newJob.dept ||
-        !this.newJob.deadline
-      ) {
-        this.displayMessage = 'Please fill in all form fields   ';
+  if (
+    !this.newJob.roleName ||
+    !this.newJob.roleDesc ||
+    this.newJob.skillsRequired.length === 0 || // Check for at least one skill selection
+    !this.newJob.location ||
+    !this.newJob.dept ||
+    !this.newJob.deadline
+  ) {
+    this.displayMessage = 'Please fill in all form fields   ';
+    this.showDisplayPopup = true;
+    return;
+  }
+
+  axios.get('http://localhost:8080/check_role_exists', {
+    params: { roleName: this.newJob.roleName }
+  })
+    .then(response => {
+      if (response.data.exists) {
+        this.displayMessage = 'Role Name already exists   ';
         this.showDisplayPopup = true;
-        return;
-      }
+      } else {
+        // Create the job listing
+        const formData = {
+          roleName: this.newJob.roleName,
+          roleDesc: this.newJob.roleDesc,
+          dept: this.newJob.dept,
+          location: this.newJob.location,
+          deadline: this.newJob.deadline,
+        };
 
-      // Check if the role name already exists in the database
-      axios.get('http://localhost:8000/check_role_exists', {
-        params: { roleName: this.newJob.roleName }
-      })
-      .then(response => {
-        if (response.data.exists) {
-          // Role name already exists
-          this.displayMessage = 'Role Name already exists   ';
-          this.showDisplayPopup = true;
-          return;
-        } else {
-          // Role name doesn't exist, proceed with submission
-          const formData = {
-            roleName: this.newJob.roleName,
-            roleDesc: this.newJob.roleDesc,
-            dept: this.newJob.dept,
-            location: this.newJob.location,
-            deadline: this.newJob.deadline,
-            skillRequired: this.newJob.skillRequired,
-          };
-
-          axios.post('http://localhost:8000/create_new_job_listing', formData)
+        axios.post('http://localhost:8080/create_new_job_listing', formData)
           .then(response => {
             console.log('Data submitted successfully:', response.data);
-            // Reset form fields after successful submission if needed
-            this.newJob = {
-              roleName: '',
-              roleDesc: '',
-              skillRequired: '',
-              location: '',
-              dept: '',
-              deadline: '',
-            };
 
-            // After creating the job listing, update the Role_Skill table
-            const roleSkillData = {
-              roleName: formData.roleName,
-              skillName: formData.skillRequired,
-            };
-
-            axios.post('http://localhost:8000/new_role_skill', roleSkillData)
-            .then(response => {
-              console.log('Role_Skill created successfully:', response.data);
-            })
-            .catch(error => {
-              console.error('Error updating Role_Skill:', error);
+            // Send POST request for each selected skill
+            this.newJob.skillsRequired.forEach(skillName => {
+              const roleSkillData = {
+                roleName: formData.roleName,
+                skillName,
+              };
+              axios.post('http://localhost:8080/new_role_skill', roleSkillData)
+                .then(response => {
+                  console.log('Role_Skill created successfully:', response.data);
+                })
+                .catch(error => {
+                  console.error('Error updating Role_Skill:', error);
+                });
             });
 
             this.displayMessage = "Form submitted successfully   ";
             this.showDisplayPopup = true;
+
+            // Reset form fields after successful submission
+            this.newJob = {
+              roleName: '',
+              roleDesc: '',
+              skillsRequired: [], // Clear selected skills
+              location: '',
+              dept: '',
+              deadline: '',
+            };
           })
           .catch(error => {
             console.error('Error submitting data:', error);
           });
-        }
-      })
-      .catch(error => {
-        console.error('Error checking role existence:', error);
-      });
+      }
+    })
+    .catch(error => {
+      console.error('Error checking role existence:', error);
+    });
+
     },
+    
     closeDisplayPopup() {
       this.showDisplayPopup = false;
     },
