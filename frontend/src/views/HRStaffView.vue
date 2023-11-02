@@ -1,40 +1,17 @@
-
 <script setup>
 // import TheWelcome from '../components/TheWelcome.vue'
 import TopNavHR from '../components/TopNavHR.vue'
-import CreateNewJob from '../components/CreateNewJob.vue'
+import RoleManage from '../components/RoleManage.vue'
+// import SkillsFilter from '../components/SkillsFilter.vue'
+import RoleDisplay from '../components/RoleDisplay.vue'
 </script>
-
 
 <template>
     <div>
         <TopNavHR></TopNavHR>
         <!-- <TheWelcome></TheWelcome> -->
-      
-      <!-- Display the job listing creation form -->
-      <CreateNewJob></CreateNewJob>
-      
-      <!-- Display the job listings table (if needed) -->
-      <!-- <div class="table-container">
-        <table class="job-listing-table"> -->
-          <!-- ... Table contents ... -->
-        <!-- </table>
-      </div> -->
+        <RoleManage></RoleManage>
+        <!-- <SkillsFilter></SkillsFilter> -->
+        <RoleDisplay></RoleDisplay>
     </div>
-  </template>
-  
-  <script>
-  export default {
-    components: {
-      TopNavHR,
-      CreateNewJob,
-    },
-    
-    // ... Other component code ...
-  };
-  </script>
-  
-  <style scoped>
-  /* Add your component-specific styles here */
-  </style>
-  
+</template>
