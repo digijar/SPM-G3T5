@@ -19,11 +19,11 @@
             </div>
 
             <div class="form-floating mb-3">
-              <select class="form-select" id="InputValue_skillReq" v-model="skillReq">
+              <select class="form-select custom-select-height" id="InputValue_skillReq" v-model="skillReq" multiple>
                 <option value="" disabled>Select</option>
                 <option v-for="skill in skills" :key="skill.Skill_Name" :value="skill.Skill_Name">{{ skill.Skill_Name }}</option>
               </select>
-              <label for="InputValue_skillReq">Skill Required</label>
+              <label for="InputValue_skillReq">Skills Required</label>
             </div>
 
             <div class="form-check mb-3">
@@ -73,7 +73,7 @@ export default {
     return {
       newroleName: '',
       roleDesc: '',
-      skillReq: '',
+      skillReq: [], // Store selected skills as an array
       location: '',
       department: '',
       deadline: '',
@@ -118,9 +118,13 @@ export default {
     },
 
     async submitForm() {
+  if (!this.roleName) {
+    console.error('Role Name is required');
+    return;
+  }
+
   const data = {
     Role_Desc: this.roleDesc,
-    Skill_Name: this.skillReq,
     Location: this.location,
     Dept: this.department,
     Deadline: this.deadline,
@@ -130,27 +134,32 @@ export default {
     // Send PUT request to update the "Role" table
     await axios.put(`http://localhost:8000/update_role/${this.roleName}`, data);
 
-    // Update the "Role_Skill" table
-    await axios.put(`http://localhost:8000/update_roleskill/${this.roleName}`, {
-      Skill_Name: this.skillReq,
-    });
+    // Remove previous entries in the "Role_Skill" table for the current role
+    await axios.delete(`http://localhost:8000/delete_roleskill/${this.roleName}`);
+
+    // Update the "Role_Skill" table with the selected skills
+    for (const selectedSkill of this.skillReq) {
+      await axios.post('http://localhost:8000/new_role_skill', { // Use the existing endpoint
+        roleName: this.roleName, // Keep using roleName
+        skillName: selectedSkill, // Change to skillName to match your Flask app
+      });
+    }
 
     // Clear the form fields
     this.newroleName = '';
     this.roleDesc = '';
-    this.skillReq = '';
+    this.skillReq = [];
     this.location = '';
     this.department = '';
     this.deadline = '';
 
-    // Close the modal after successful update
+    // Close the modal after a successful update
     this.$emit('form-submitted');
     this.$emit('close');
   } catch (error) {
     console.error(error);
   }
-},
-
+    },
   },
 
   created() {
@@ -159,6 +168,7 @@ export default {
   },
 };
 </script>
+
 
 
 <style scoped>
@@ -172,5 +182,9 @@ export default {
 
 .form-check-label {
   margin-left: 8px;
+}
+
+.custom-select-height {
+  height: 200px; /* Adjust the height as needed */
 }
 </style>

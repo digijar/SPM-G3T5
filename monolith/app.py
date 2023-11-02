@@ -285,6 +285,23 @@ def update_roleskill(role_name):
     db.session.commit()
     return jsonify({'message': 'Role_Skill updated successfully'}), 200
 
+@app.route('/delete_roleskill/<string:role_name>', methods=['DELETE'])
+def delete_role_skill(role_name):
+    try:
+        # Find the Role_Skill entries related to the given role_name
+        role_skill_entries = Role_Skill.query.filter_by(Role_Name=role_name).all()
+
+        # Delete each related Role_Skill entry
+        for entry in role_skill_entries:
+            db.session.delete(entry)
+
+        # Commit the changes to the database
+        db.session.commit()
+
+        return jsonify({'message': f'Successfully deleted Role_Skill entries for {role_name}'})
+    except Exception as e:
+        return jsonify({'error': str(e)})
+
 # Applications
 class Applications(db.Model):
     __tablename__ = 'Applications'
