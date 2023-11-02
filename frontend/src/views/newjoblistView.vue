@@ -1,14 +1,14 @@
 
 <script setup>
 // import TheWelcome from '../components/TheWelcome.vue'
-import TopNav from '../components/TopNav.vue'
+import TopNavHR from '../components/TopNavHR.vue'
 import CreateNewJob from '../components/CreateNewJob.vue'
 </script>
 
 
 <template>
     <div>
-        <TopNav></TopNav>
+        <TopNavHR></TopNavHR>
         <!-- <TheWelcome></TheWelcome> -->
       
       <!-- Display the job listing creation form -->
@@ -26,6 +26,7 @@ import CreateNewJob from '../components/CreateNewJob.vue'
   <script>
   export default {
     components: {
+      TopNavHR,
       CreateNewJob,
     },
     
