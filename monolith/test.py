@@ -16,7 +16,7 @@ def test_get_staff_data():
     data = response.get_json()
     assert isinstance(data, list)
 
-# Test the "/get_staff_data_by_id/<int:staff_id>" route
+# test /get_staff_data_by_id/<int:staff_id>
 def test_get_staff_data_by_id():
     response = client.get('/get_staff_data_by_id/')  # valid staff_id here
     assert response.status_code == 200
@@ -24,7 +24,7 @@ def test_get_staff_data_by_id():
     assert isinstance(data, dict)
     # Add more assertions based on the expected response JSON structure
 
-# Test the "/edit_staff_data" route
+# test /edit_staff_data
 def test_edit_staff_data():
     staff_data = {
         "Staff_ID": 1,  # Provide a valid Staff_ID for the test
@@ -40,7 +40,7 @@ def test_edit_staff_data():
     data = response.get_json()
     assert data["message"] == "Staff data updated successfully"
 
-# Test the "/check_role_exists" route
+# test /check_role_exists
 def test_check_role_exists():
     response = client.get('/check_role_exists?roleName=YourRoleName')  # Provide a valid role name
     assert response.status_code == 200
@@ -54,7 +54,7 @@ def test_get_role_data():
     data = response.get_json()
     assert isinstance(data, list)
 
-# Test the "/create_new_job_listing" route
+# test /create_new_job_listin 
 def test_create_new_job_listing():
     role_data = {
         "roleName": "NewRoleName",
@@ -68,7 +68,7 @@ def test_create_new_job_listing():
     data = response.get_json()
     assert data["message"] == "Job listing created successfully"
 
-# Test the "/update_role/<role_name>" route
+# test /update_role/<role_name>
 def test_update_role():
     role_name = "YourRoleName"  # Provide a valid role name
     role_data = {
