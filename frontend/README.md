@@ -1,29 +1,17 @@
 # spm-fiesta
 
-This template should help get you started developing with Vue 3 in Vite.
+Software Project Management Project for AY23/24 Sem 1
+Members: Adam Teng, Ivan Yeo, Izumi Yoneda, Jaron Chan, Sean Tan
 
-## Recommended IDE Setup
+### Installing Dependencies
+1. Directory: ```SPM-Fiesta```
+2. Command line: ``` pip install -r requirements.txt ```
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+### Starting the Frontend
+1. cd to the frontend directory: ``` SPM-Fiesta/frontend ```
+2. Command line: ``` npm install ```
+3. Command line: ``` npm run dev ```
 
-## Customize configuration
-
-See [Vite Configuration Reference](https://vitejs.dev/config/).
-
-## Project Setup
-
-```sh
-npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
-```
-
-### Compile and Minify for Production
-
-```sh
-npm run build
-```
+### Starting the Backend
+1. cd to the backend directory: ``` SPM-Fiesta/monolith ``` 
+2. Command line: ``` python app.py ```
