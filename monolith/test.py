@@ -166,11 +166,20 @@ def test_get_staff_skill_by_id():
 
 # test 18 /get_skill_match/<role_name>/<int:staff_id>
 def test_get_skill_match():
-    role_name = "Account Manager"  # Provide a valid role name
-    staff_id = 210044  # Provide a valid staff_id
-    response = client.get(f'/get_skill_match/{role_name}/{staff_id}')
-    assert response.status_code == 200
+    role_name = "Sales Manager"
+    staff_id = 140004
+
+    response = client.get(f"/get_skill_match/{role_name}/{staff_id}")
     data = response.get_json()
+
+    assert response.status_code == 200
+    assert "Match_Percentage" in data
+    assert data["Role_Name"] == role_name
+    assert data["Staff_ID"] == staff_id
+
+    # Assert the match percentage value within a certain tolerance due to floating-point precision
+    expected_match_percentage = 9.090909090909092
+    assert abs(data["Match_Percentage"] - expected_match_percentage) < 0.00001
 
 # test 19 /get_missing_skills/<role_name>/<int:staff_id>
 def test_get_missing_skills():
