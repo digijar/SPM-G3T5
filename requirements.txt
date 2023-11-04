@@ -1,0 +1,4 @@
+Flask
+flask_cors
+flask_sqlalchemy
+watchdog>=3.0.0
