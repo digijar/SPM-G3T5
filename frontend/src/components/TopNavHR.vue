@@ -20,6 +20,9 @@
                 <a class="nav-link active" aria-current="page" href="/">Home</a>
             </div>
             <div class="navbar-nav">
+                <a class="nav-link active" aria-current="page" href="/hrstaff">Roles</a>
+            </div>
+            <div class="navbar-nav">
                 <a class="nav-link active" aria-current="page" href="/hrstaff/applications">Applications</a>
             </div>
             </div>
