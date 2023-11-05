@@ -39,10 +39,7 @@
             </div>
 
             <div class="form-floating mb-3">
-              <select class="form-select" id="InputValue_Dept" v-model="department">
-                <option value="" disabled>Select</option>
-                <option v-for="dept in departments" :key="dept" :value="dept">{{ dept }}</option>
-              </select>
+              <input type="text" class="form-control" id="InputValue_Dept" v-model="department">
               <label for="InputValue_Dept">Department</label>
             </div>
 

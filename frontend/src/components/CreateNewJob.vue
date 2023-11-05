@@ -51,10 +51,8 @@
         <div class="form-group">
           <div class="input-container">
             <label for="dept" class="label">Department:</label>
-            <select class="form-select" id="dept" v-model="newJob.dept">
-              <option value="" disabled>Select</option>
-              <option v-for="department in departments" :key="department">{{ department }}</option>
-            </select>
+            <!-- Replace the select with an input -->
+            <input type="text" id="dept" v-model="newJob.dept" class="form-control">
           </div>
         </div>
 
