@@ -53,6 +53,7 @@
           </form>
         </div>
         <div class="modal-footer">
+          <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
           <button @click="submitForm" type="button" class="btn btn-success" data-bs-dismiss="modal">Submit</button>
         </div>
       </div>
@@ -79,6 +80,7 @@ export default {
       deadline: '',
       skills: [],
       departments: [],
+      errorMessage: '',
     };
   },
 
@@ -123,6 +125,11 @@ export default {
     return;
   }
 
+  if (!this.roleName || !this.roleDesc || !this.skillReq.length || !this.location || !this.department || !this.deadline) {
+        this.errorMessage = 'Please fill in all form fields';
+        return;
+      }
+
   const data = {
     Role_Desc: this.roleDesc,
     Location: this.location,
@@ -152,6 +159,8 @@ export default {
     this.location = '';
     this.department = '';
     this.deadline = '';
+
+    this.errorMessage = '';
 
     // Close the modal after a successful update
     this.$emit('form-submitted');
@@ -186,5 +195,10 @@ export default {
 
 .custom-select-height {
   height: 200px; /* Adjust the height as needed */
+}
+
+.error-message {
+  color: red;
+  margin-top: 10px;
 }
 </style>
