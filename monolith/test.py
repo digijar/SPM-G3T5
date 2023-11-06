@@ -222,5 +222,15 @@ def test_invalid_staff_id():
         response = client.post("/create_new_application", json={"role_name": role_name, "staff_id": staff_id})
         assert response.status_code == 400  # Assuming 400 is the status code for a bad request
 
+# test 22: Create new role with invalid/missing data (roleName and roleDesc)
+def test_create_new_job_listing_missing():
+    role_data = {
+        "dept": "HR",
+        "location": "On-Site",
+        "deadline": "2023-12-31"
+    }
+    response = client.post('/create_new_job_listing', data=json.dumps(role_data), content_type='application/json')
+    assert response.status_code == 500 
+
 if __name__ == '__main__':
     pytest.main()
