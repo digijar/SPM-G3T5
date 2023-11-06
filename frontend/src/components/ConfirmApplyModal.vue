@@ -49,7 +49,7 @@
     },
     
     created() {
-      // this.fetchStaffData();
+      this.fetchApplicationData();
     },
 
     data() {
@@ -62,6 +62,7 @@
         staffIdData: {},
         roleSkillPercent: '',
         staff_roleSkills: [],
+        existingApplications: [],
       };
     },
 
@@ -85,6 +86,16 @@
                 return;
             }
             else {
+                for (let application of this.existingApplications) {
+                    // console.log(application.Role_Name + application.Staff_ID)
+                    if (application.Role_Name == this.roleName && application.Staff_ID == this.staffId) {
+                        alert("Submission failed. You have already applied for this role.");
+                        return;
+                    }
+                    else {
+                        continue;
+                    }
+                }
                 alert("You have successfully applied for the role of " + this.roleName);
                 this.submitApplication();
                 this.$emit('close');
@@ -96,7 +107,7 @@
         // console.log('Validating staff ID:', this.staffId);
         const regex = /^\d{6}$/;
         if (!regex.test(this.staffId)) {
-            console.log('Invalid staff ID');
+            // console.log('Invalid staff ID');
             this.staffIdError = 'Staff ID must be 6 digits';
         } else {
             this.fetchStaffIdData(this.staffId)
@@ -107,7 +118,7 @@
         // console.log('Fetching staff data for staff ID:', this.staffId);
         axios.get('http://localhost:8000/get_staff_data_by_id/' + this.staffId)
             .then(response => {
-                console.log(response.data);
+                // console.log(response.data);
                 if (response.data.error) {
                     this.staffIdError = 'Staff ID does not exist';
                     this.staffIdData = {};
@@ -127,11 +138,13 @@
         },
       
       getSkillMatchPercentage() {
-        console.log('Fetching Skill Match Percentage for role:', this.roleName, 'and staff ID:', this.staffId);
+        // console.log('Fetching Skill Match Percentage for role:', this.roleName, 'and staff ID:', this.staffId);
         axios.get(`http://localhost:8000/get_skill_match/${this.roleName}/${this.staffId}`)
             .then(response => {
-                console.log(response.data);
-                this.roleSkillPercent = parseFloat(response.data.Match_Percentage).toFixed(2);
+                // console.log(response.data);
+                // this.roleSkillPercent = parseFloat(response.data.Match_Percentage).toFixed(2);
+                const matchPercentage = parseFloat(response.data.Match_Percentage);
+                this.roleSkillPercent = isNaN(matchPercentage) ? 0 : matchPercentage.toFixed(2);
             })
             .catch(error => {
               console.error(error);
@@ -139,10 +152,10 @@
       },
 
       getMissingSkills() {
-        console.log('Getting missing skills for:', this.roleName, 'and staff ID:', this.staffId);
+        // console.log('Getting missing skills for:', this.roleName, 'and staff ID:', this.staffId);
         axios.get(`http://localhost:8000/get_missing_skills/${this.roleName}/${this.staffId}`)
             .then(response => {
-                console.log(response.data);
+                // console.log(response.data);
                 this.staff_roleSkills = response.data;
             })
             .catch(error => {
@@ -168,45 +181,28 @@
           this.staffId = '';
           this.currDept = '';
           this.skill_match = '';
+          this.staffName = '';
         })
         .catch(error => {
           console.error('Error submitting data:', error);
         });
     },
       
+    fetchApplicationData() {
+        axios.get('http://localhost:8000/get_applications_data')
+            .then(response => {
+                // console.log(response.data);
+                this.existingApplications = response.data;
+                // for (let application of this.existingApplications) {
+                //     console.log(application.Role_Name + application.Staff_ID);
+                // }
+            })
+            .catch(error => {
+                console.error(error);
+            });
+        },
       }
-    
-    // validateDepartment() {
-    //     // console.log('Validating department:', this.currDept);
-    //     if (!this.allDepts.includes(this.currDept)) {
-    //         // console.log('Invalid department');
-    //         this.deptError = 'Department does not exist!';
-    //     } else {
-    //         // console.log('Valid department');
-    //         this.deptError = '';
-    //         }
-    //     },
-    
-    // fetchStaffData() {
-    //     axios.get('http://localhost:8000/get_staff_data')
-    //         .then(response => {
-    //             // console.log(response.data[0].Dept);
-    //             this.staffData = response.data;
-    //             this.getUniqueDepts();
-    //         })
-    //         .catch(error => {
-    //             console.error(error);
-    //         });
-    //     },
 
-    //     getUniqueDepts() {
-    //       this.staffData.forEach(staff => {
-    //         if (!this.allDepts.includes(staff.Dept)) {
-    //           this.allDepts.push(staff.Dept);
-    //         }            
-    //       });
-    //       // console.log(this.allDepts)
-    //     },    
   };
   </script>
   

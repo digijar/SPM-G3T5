@@ -93,14 +93,28 @@
           </div>
 
           <!-- Display missing skills as a list of bullet points -->
-        <div v-if="selectedMissingSkills.length > 0">
+        <!-- <div v-if="selectedMissingSkills.length > 0">
           <h5>Missing Skills:</h5>
           <ul class="skills-list">
             <li v-for="skill in selectedMissingSkills" :key="skill.Skill_Name">
               {{ skill.Skill_Name }}
             </li>
           </ul>
-        </div>
+        </div> -->
+        <div>
+            <h5>Missing Skills:</h5>
+            <div v-if="selectedMissingSkills.length > 0">
+              <ul class="skills-list">
+                <li v-for="skill in selectedMissingSkills" :key="skill.Skill_Name">
+                  {{ skill.Skill_Name }}
+                </li>
+              </ul>
+            </div>
+            <div v-else>
+              <p>- no missing skills -</p>
+            </div>
+          </div>
+
           <button class="btn btn-primary" @click="hidePopup">Close</button>
         </div>
       </div>

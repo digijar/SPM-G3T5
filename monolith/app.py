@@ -227,10 +227,15 @@ def get_roleSkill_data():
 @app.route("/get_roleskill_data_by_name/<role_name>", methods=["GET"])
 def get_roleSkill_data_by_name(role_name):
     try:
+        app.logger.info(f"Fetching skills for role: {role_name}")
+
         roleSkill_data = Role_Skill.query.with_entities(
             Role_Skill.Role_Name,
             Role_Skill.Skill_Name
         ).filter_by(Role_Name=role_name).all()
+
+        if not roleSkill_data:
+            app.logger.warning(f"No skills found for role: {role_name}")
 
         roleSkill_list = []
 
@@ -240,9 +245,10 @@ def get_roleSkill_data_by_name(role_name):
                 "Skill_Name": roleSkill.Skill_Name,
             })
 
-        app.logger.info(roleSkill_list)
+        app.logger.info(f"Skills for role {role_name}: {roleSkill_list}")
         return jsonify(roleSkill_list)
     except Exception as e:
+        app.logger.error(f"Error fetching skills for role {role_name}: {str(e)}")
         return jsonify({"error": str(e)})
 
 @app.route('/new_role_skill', methods=['POST'])
@@ -330,6 +336,9 @@ def get_applications_data():
     except Exception as e:
         return jsonify({"error": str(e)})
 
+def staff_exists(staff_id):
+    return Staff.query.get(staff_id) is not None
+
 @app.route("/create_new_application", methods=["POST"])
 def create_new_application():
     try:
@@ -340,6 +349,14 @@ def create_new_application():
         current_dept = data.get('current_dept')
         skill_match = data.get('skill_match')
         
+        # Check if staff_id exists
+        if not staff_exists(staff_id):
+            return jsonify({"error": "Invalid staff_id. No such staff exists."}), 400
+
+        # Check if an application with the given role_name and staff_id already exists
+        existing_application = Applications.query.filter_by(Role_Name=role_name, Staff_ID=staff_id).first()
+        if existing_application:
+            return jsonify({"error": "An application with the same role_name and staff_id already exists"}), 400
 
         # Create a new entry in the Application table
         new_application = Applications(Role_Name=role_name, Staff_ID=staff_id, Current_Dept=current_dept, Skills_Match_Percentage=skill_match)
@@ -347,6 +364,50 @@ def create_new_application():
         db.session.commit()
 
         return jsonify({"message": "Application created successfully"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+@app.route("/delete_application", methods=["DELETE"])
+def delete_application():
+    try:
+        # Get the role_name and staff_id from the request parameters
+        role_name = request.args.get("role_name")
+        staff_id = request.args.get("staff_id")
+
+        # Query the Applications table to find an application with the given role_name and staff_id
+        application = Applications.query.filter_by(Role_Name=role_name, Staff_ID=staff_id).first()
+
+        # If an application is found, delete it from the database
+        if application:
+            db.session.delete(application)
+            db.session.commit()
+            # print(f"Deleted application with role_name {role_name} and staff_id {staff_id}")
+            return jsonify({"message": "Application deleted successfully"})
+        # If no application is found, return a JSON response indicating that no application exists
+        else:
+            # print(f"No application found with role_name {role_name} and staff_id {staff_id}")
+            return jsonify({"error": "No application found with the given role_name and staff_id"}), 404
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+    
+@app.route("/check_application", methods=["GET"])
+def check_application():
+    try:
+        # Get the role_name and staff_id from the request parameters
+        role_name = request.args.get("role_name")
+        staff_id = request.args.get("staff_id")
+
+        # Query the Applications table to find an application with the given role_name and staff_id
+        application = Applications.query.filter_by(Role_Name=role_name, Staff_ID=staff_id).first()
+
+        # If an application is found, return a JSON response indicating that an application exists
+        if application:
+            return jsonify({"application_exists": True})
+        # If no application is found, return a JSON response indicating that no application exists
+        else:
+            return jsonify({"application_exists": False})
+
     except Exception as e:
         return jsonify({"error": str(e)})
 
@@ -406,8 +467,15 @@ def get_skill_match(role_name, staff_id):
         # Calculate the percentage match
         app.logger.info(role_skill_set)
         app.logger.info(staff_skill_set)
-        common_skills = role_skill_set.intersection(staff_skill_set)
-        match_percentage = (len(common_skills) / len(role_skill_set)) * 100
+
+        if len(role_skill_set) == 0:
+            match_percentage = 0  # Set the match percentage to 0% if there are no skills for the role.
+        else:
+            common_skills = role_skill_set.intersection(staff_skill_set)
+            match_percentage = (len(common_skills) / len(role_skill_set)) * 100
+        
+        # common_skills = role_skill_set.intersection(staff_skill_set)
+        # match_percentage = (len(common_skills) / len(role_skill_set)) * 100
 
         result = {
             'Role_Name': role_name,

@@ -1,7 +1,9 @@
 # spm-fiesta
 
-Software Project Management Project for AY23/24 Sem 1
+Software Project Management Project for AY23/24 Sem 1 G3T5
+
 Members: Adam Teng, Ivan Yeo, Izumi Yoneda, Jaron Chan, Sean Tan
+
 https://github.com/digijar/SPM-fiesta.git
 
 ### Installing Dependencies
@@ -9,7 +11,7 @@ https://github.com/digijar/SPM-fiesta.git
 2. Command line: ``` pip install -r requirements.txt ```
 
 ### Starting the Frontend
-1. cd to the frontend directory: ``` SPM-Fiesta/frontend ```
+1. cd to the frontend directory: ``` SPM-Fiesta/frontend/src ```
 2. Command line: ``` npm install ```
 3. Command line: ``` npm run dev ```
 
