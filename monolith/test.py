@@ -240,5 +240,14 @@ def test_create_new_job_listing_missing():
     response = client.post('/create_new_job_listing', data=json.dumps(role_data), content_type='application/json')
     assert response.status_code == 500 
 
+# test 23: Create new job listing with an existing role name
+def test_same_role_name():
+    role_name = "testrolename0"
+
+    response = client.post("/create_new_job_listing", json={
+            "roleName": role_name,
+        })
+    assert response.status_code == 500
+
 if __name__ == '__main__':
     pytest.main()

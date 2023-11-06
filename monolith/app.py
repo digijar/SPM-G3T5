@@ -144,6 +144,10 @@ def create_new_job_listing():
         location = data['location']
         deadline = data['deadline']
 
+        existing_role = Role.query.filter_by(Role_Name=role_name).first()
+        if existing_role:
+            return jsonify({"error": "Role name already exists"}), 500
+
         # Create a new Role object and add it to the database
         new_role = Role(
             Role_Name=role_name,
