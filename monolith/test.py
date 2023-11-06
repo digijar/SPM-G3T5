@@ -180,6 +180,29 @@ def test_get_roleSkill_data_by_name():
 #     data = response.get_json()
 #     assert data["message"] == "Role_Skill updated successfully"
 
+# test 11 /new_role_skill
+def test_new_role_skill():
+    role_name = "testjaronrole12345"
+    skill_name = "Account Management"
+
+    role_skill_data = {
+        "roleName": role_name,
+        "skillName": skill_name
+    }
+
+    # Make a POST request to create the Role-Skill relationship
+    response = client.post('/new_role_skill', json=role_skill_data)
+
+    # Check that the response is successful
+    assert response.status_code == 200
+
+    # Delete the Role-Skill relationship immediately after creation
+    with app.app_context():
+        role_skill = Role_Skill.query.filter_by(Role_Name=role_name, Skill_Name=skill_name).first()
+        if role_skill is not None:
+            db.session.delete(role_skill)
+            db.session.commit()
+
 # test 12 /update_roleskill/<role_name>
 # def test_update_roleskill():
 #     role_name = "Account Manager"  # Provide a valid role name
