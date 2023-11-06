@@ -2,7 +2,7 @@ import os
 import pytest
 from app import app, db, Role, Staff, Skill, Role_Skill, Applications, StaffSkill
 from flask_sqlalchemy import SQLAlchemy
-from flask import json
+from flask import Flask, json
 from datetime import datetime
 
 # testing mode
@@ -201,7 +201,9 @@ def test_get_missing_skills():
 # test 20: Applications for the same role with the same staff ID will not be accepted
 def test_same_role_same_staff():
     role_name = "testrolename0"
-    staff_id = 21044
+    staff_id = 210044
+    current_dept = "IT"
+    skill_match = 85.0
 
     # Check if an application has already been submitted
     response1 = client.get(f"/check_application?role_name={role_name}&staff_id={staff_id}")
@@ -210,9 +212,13 @@ def test_same_role_same_staff():
 
     # If an application has been submitted, the system should not accept a second application
     if data1["application_exists"]:
-        response2 = client.post(f"/create_new_application/{role_name}/{staff_id}")
-        assert response2.status_code == 400  # Assuming 400 is the status code for a bad request
-        assert "Applications for the same role with the same staff ID will not be accepted" in response2.get_json()["message"]
+        response = client.post("/create_new_application", json={"role_name": role_name, "staff_id": staff_id, "current_dept": current_dept, "skill_match": skill_match})
+        assert response.status_code == 400  # Assuming 400 is the status code for a bad request
+        assert "An application with the same role_name and staff_id already exists" in response.get_json()["error"]
+    else:
+        response = client.post("/create_new_application", json={"role_name": role_name, "staff_id": staff_id, "current_dept": current_dept, "skill_match": skill_match})
+        assert "Application created successfully" in response.get_json()["message"]
+        test_same_role_same_staff()  # Recursively call the function to check if the application has been submitted
 
 # test 21: Check if the given staff_id is not exactly 6 digits that the application is rejected
 def test_invalid_staff_id():
