@@ -3,6 +3,7 @@ import pytest
 from app import app, db, Role, Staff, Skill, Role_Skill, Applications, StaffSkill
 from flask_sqlalchemy import SQLAlchemy
 from flask import json
+from datetime import datetime
 
 # testing mode
 app.config['TESTING'] = True
@@ -56,16 +57,17 @@ def test_get_role_data():
 # test 6 /create_new_job_listing
 def test_create_new_job_listing():
     role_data = {
-        "roleName": "testrolename12345",
+        "roleName": "testjaronrole12345",
         "roleDesc": "test create new job",
         "dept": "HR",
         "location": "On-Site",  # Provide a valid location
-        "deadline": "2023-12-31"  # Provide a valid date
+        "deadline": datetime.strptime("2023-12-31", "%Y-%m-%d")  # Convert the string to a date
     }
     response = client.post('/create_new_job_listing', data=json.dumps(role_data), content_type='application/json')
     assert response.status_code == 200
     data = response.get_json()
     assert data["message"] == "Job listing created successfully"
+
 
 # test 7 /update_role/<role_name>
 def test_update_role():
@@ -97,7 +99,7 @@ def test_get_roleSkill_data():
 
 # test 10 /get_roleskill_data_by_name/<role_name>
 def test_get_roleSkill_data_by_name():
-    response = client.get('/get_roleSkill_data_by_name/Developer')
+    response = client.get('/get_roleskill_data_by_name/Developer')
     assert response.status_code == 200
     data = response.get_json()
     assert isinstance(data, list)

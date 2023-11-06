@@ -14,7 +14,8 @@ user = os.getenv('user')
 password = os.getenv('password')
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{user}:{password}@spm-database.cfr5k6rgnsdu.ap-southeast-2.rds.amazonaws.com:3306/SPM_fiesta'
+# app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{user}:{password}@spm-database.cfr5k6rgnsdu.ap-southeast-2.rds.amazonaws.com:3306/SPM_fiesta'
+app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://admin:98CsBUaGxbkqn6elAgdD@spm-database.cfr5k6rgnsdu.ap-southeast-2.rds.amazonaws.com:3306/SPM_fiesta'
 db = SQLAlchemy(app)
 CORS(app)
 
@@ -154,7 +155,7 @@ def create_new_job_listing():
         db.session.add(new_role)
         db.session.commit()
 
-        return jsonify({"message": "Job listing created successfully"})
+        return jsonify({"message": "Job listing created successfully"}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
@@ -246,10 +247,10 @@ def get_roleSkill_data_by_name(role_name):
             })
 
         app.logger.info(f"Skills for role {role_name}: {roleSkill_list}")
-        return jsonify(roleSkill_list)
+        return jsonify(roleSkill_list), 200
     except Exception as e:
         app.logger.error(f"Error fetching skills for role {role_name}: {str(e)}")
-        return jsonify({"error": str(e)})
+        return jsonify({"error": str(e)}), 404
 
 @app.route('/new_role_skill', methods=['POST'])
 def new_role_skill():
@@ -274,7 +275,7 @@ def new_role_skill():
         db.session.add(new_role_skill)
         db.session.commit()
 
-        return jsonify({"message": "Role_Skill updated successfully"})
+        return jsonify({"message": "Role_Skill updated successfully"}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
