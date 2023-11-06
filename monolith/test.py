@@ -141,7 +141,7 @@ def test_get_applications_data():
 # test 15 /create_new_application
 def test_create_new_application():
     application_data = {
-        "role_name": "Account Manager",  # Provide a valid role name
+        "role_name": "testrolename0",  # Provide a valid role name
         "staff_id": 210044,  # Provide a valid staff_id
         "current_dept": "IT",  # Provide a valid department name
         "skill_match": 85.0  # Provide a valid skill match percentage
@@ -149,14 +149,18 @@ def test_create_new_application():
 
     # Delete any existing application with the same role_name and staff_id
     response_delete = client.delete(f"/delete_application?role_name={application_data['role_name']}&staff_id={application_data['staff_id']}")
-    assert response_delete.status_code in [200, 404]  # It's okay if the application didn't exist
+    assert response_delete.status_code in [200, 404]
 
-    # Ccreate a new application
+    # Create a new application
     response = client.post('/create_new_application', data=json.dumps(application_data), content_type='application/json')
     # print(response.get_json())  # Print the server response
     assert response.status_code == 200
     data = response.get_json()
     assert data["message"] == "Application created successfully"
+
+    # Tear down: Delete the application that was created
+    response_delete = client.delete(f"/delete_application?role_name={application_data['role_name']}&staff_id={application_data['staff_id']}")
+    assert response_delete.status_code == 200
 
 # test 16 /get_staff_skill
 def test_get_staff_skill():
@@ -205,20 +209,29 @@ def test_same_role_same_staff():
     current_dept = "IT"
     skill_match = 85.0
 
-    # Check if an application has already been submitted
+    # Check if the test application has already been submitted
     response1 = client.get(f"/check_application?role_name={role_name}&staff_id={staff_id}")
-    assert response1.status_code == 200
+    assert response1.status_code in [200,400]
     data1 = response1.get_json()
 
-    # If an application has been submitted, the system should not accept a second application
+    # If the application has been submitted, the system should not accept a second application
     if data1["application_exists"]:
         response = client.post("/create_new_application", json={"role_name": role_name, "staff_id": staff_id, "current_dept": current_dept, "skill_match": skill_match})
         assert response.status_code == 400  # Assuming 400 is the status code for a bad request
         assert "An application with the same role_name and staff_id already exists" in response.get_json()["error"]
     else:
         response = client.post("/create_new_application", json={"role_name": role_name, "staff_id": staff_id, "current_dept": current_dept, "skill_match": skill_match})
+        assert response.status_code == 200
         assert "Application created successfully" in response.get_json()["message"]
-        test_same_role_same_staff()  # Recursively call the function to check if the application has been submitted
+        
+        response2 = client.post("/create_new_application", json={"role_name": role_name, "staff_id": staff_id, "current_dept": current_dept, "skill_match": skill_match})
+        assert response2.status_code == 400  # Assuming 400 is the status code for a bad request
+        assert "An application with the same role_name and staff_id already exists" in response2.get_json()["error"]
+
+    # Tear down: Delete the application that was created
+    response_delete = client.delete(f"/delete_application?role_name={role_name}&staff_id={staff_id}")
+    assert response_delete.status_code == 200
+
 
 # test 21: Check if the given staff_id is not exactly 6 digits that the application is rejected
 def test_invalid_staff_id():

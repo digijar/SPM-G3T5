@@ -384,7 +384,7 @@ def delete_application():
             db.session.delete(application)
             db.session.commit()
             # print(f"Deleted application with role_name {role_name} and staff_id {staff_id}")
-            return jsonify({"message": "Application deleted successfully"})
+            return jsonify({"message": "Application deleted successfully"}), 200
         # If no application is found, return a JSON response indicating that no application exists
         else:
             # print(f"No application found with role_name {role_name} and staff_id {staff_id}")
@@ -405,10 +405,10 @@ def check_application():
 
         # If an application is found, return a JSON response indicating that an application exists
         if application:
-            return jsonify({"application_exists": True})
+            return jsonify({"application_exists": True}), 200
         # If no application is found, return a JSON response indicating that no application exists
         else:
-            return jsonify({"application_exists": False})
+            return jsonify({"application_exists": False}), 400
 
     except Exception as e:
         return jsonify({"error": str(e)})
