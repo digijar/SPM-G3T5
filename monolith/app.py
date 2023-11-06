@@ -196,8 +196,10 @@ def update_role(role_name):
     else:
         return jsonify({'message': 'Deadline cannot be blank'}), 500
     
-    if not data['Skills']:
-        return jsonify({'message': 'Skills cannot be blank'}), 500
+    if 'Skills' in data and (isinstance(data['Skills'], list) or (isinstance(data['Skills'], str) and data['Skills'])):
+        role.Skills = data['Skills']
+    else:
+        return jsonify({'message': 'Skills cannot be blank or empty list'}), 500
     
     db.session.commit()
     return jsonify({'message': 'Role updated successfully'}), 200
