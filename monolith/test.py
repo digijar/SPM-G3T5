@@ -196,7 +196,7 @@ def test_get_missing_skills():
     assert response.status_code == 200
     data = response.get_json()
 
-# test 20 G3T5-43TC3: Applications for the same role with the same staff ID will not be accepted
+# test 20: Applications for the same role with the same staff ID will not be accepted
 def test_same_role_same_staff():
     role_name = "testrolename0"
     staff_id = 21044
@@ -208,10 +208,19 @@ def test_same_role_same_staff():
 
     # If an application has been submitted, the system should not accept a second application
     if data1["application_exists"]:
-        response2 = client.post(f"/submit_application/{role_name}/{staff_id}")
+        response2 = client.post(f"/create_new_application/{role_name}/{staff_id}")
         assert response2.status_code == 400  # Assuming 400 is the status code for a bad request
         assert "Applications for the same role with the same staff ID will not be accepted" in response2.get_json()["message"]
-    
+
+# test 21: Check if the given staff_id is not exactly 6 digits that the application is rejected
+def test_invalid_staff_id():
+    role_name = "testrolename0"
+    invalid_staff_ids = [0, 12345, 1234567, 'ABCDEF', 'ABC', 'ABCDEFG']  # This list contains staff_id values that does not exist
+
+    for staff_id in invalid_staff_ids:
+        # Try to submit an application with an invalid staff_id
+        response = client.post("/create_new_application", json={"role_name": role_name, "staff_id": staff_id})
+        assert response.status_code == 400  # Assuming 400 is the status code for a bad request
 
 if __name__ == '__main__':
     pytest.main()

@@ -330,6 +330,9 @@ def get_applications_data():
     except Exception as e:
         return jsonify({"error": str(e)})
 
+def staff_exists(staff_id):
+    return Staff.query.get(staff_id) is not None
+
 @app.route("/create_new_application", methods=["POST"])
 def create_new_application():
     try:
@@ -340,6 +343,10 @@ def create_new_application():
         current_dept = data.get('current_dept')
         skill_match = data.get('skill_match')
         
+        # Check if staff_id exists
+        if not staff_exists(staff_id):
+            return jsonify({"error": "Invalid staff_id. No such staff exists."}), 400
+
         # Check if an application with the given role_name and staff_id already exists
         existing_application = Applications.query.filter_by(Role_Name=role_name, Staff_ID=staff_id).first()
         if existing_application:
