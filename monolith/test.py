@@ -70,7 +70,7 @@ def test_get_role_data():
 
 # test 6 /create_new_job_listing
 def test_create_new_job_listing_():
-    role_name = "testcreatenewrolename"
+    role_name = "testbrandnewrolename"
 
     role_data = {
         "roleName": role_name,
