@@ -227,10 +227,15 @@ def get_roleSkill_data():
 @app.route("/get_roleskill_data_by_name/<role_name>", methods=["GET"])
 def get_roleSkill_data_by_name(role_name):
     try:
+        app.logger.info(f"Fetching skills for role: {role_name}")
+
         roleSkill_data = Role_Skill.query.with_entities(
             Role_Skill.Role_Name,
             Role_Skill.Skill_Name
         ).filter_by(Role_Name=role_name).all()
+
+        if not roleSkill_data:
+            app.logger.warning(f"No skills found for role: {role_name}")
 
         roleSkill_list = []
 
@@ -240,9 +245,10 @@ def get_roleSkill_data_by_name(role_name):
                 "Skill_Name": roleSkill.Skill_Name,
             })
 
-        app.logger.info(roleSkill_list)
+        app.logger.info(f"Skills for role {role_name}: {roleSkill_list}")
         return jsonify(roleSkill_list)
     except Exception as e:
+        app.logger.error(f"Error fetching skills for role {role_name}: {str(e)}")
         return jsonify({"error": str(e)})
 
 @app.route('/new_role_skill', methods=['POST'])
