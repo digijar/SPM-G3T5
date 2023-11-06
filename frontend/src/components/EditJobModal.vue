@@ -132,6 +132,7 @@ export default {
     Location: this.location,
     Dept: this.department,
     Deadline: this.deadline,
+    Skills: this.skillReq,
   };
 
   try {

@@ -148,6 +148,7 @@ export default {
           dept: this.newJob.dept,
           location: this.newJob.location,
           deadline: this.newJob.deadline,
+          skills: this.newJob.skillsRequired,
         };
 
         axios.post('http://localhost:8000/create_new_job_listing', formData)

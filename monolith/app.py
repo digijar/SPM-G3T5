@@ -143,10 +143,14 @@ def create_new_job_listing():
         department = data['dept']
         location = data['location']
         deadline = data['deadline']
+        skills = data['skills']
 
         existing_role = Role.query.filter_by(Role_Name=role_name).first()
         if existing_role:
             return jsonify({"error": "Role name already exists"}), 500
+        
+        if not (role_name and role_desc and department and location and deadline and skills):
+            return jsonify({"error": "One or more fields are blank"}), 500
 
         # Create a new Role object and add it to the database
         new_role = Role(
@@ -191,6 +195,9 @@ def update_role(role_name):
         role.Deadline = data['Deadline']
     else:
         return jsonify({'message': 'Deadline cannot be blank'}), 500
+    
+    if not data['Skills']:
+        return jsonify({'message': 'Skills cannot be blank'}), 500
     
     db.session.commit()
     return jsonify({'message': 'Role updated successfully'}), 200
@@ -401,7 +408,7 @@ def delete_application():
             db.session.delete(application)
             db.session.commit()
             # print(f"Deleted application with role_name {role_name} and staff_id {staff_id}")
-            return jsonify({"message": "Application deleted successfully"}), 200
+            return jsonify({"message": "Application deleted successfully"})
         # If no application is found, return a JSON response indicating that no application exists
         else:
             # print(f"No application found with role_name {role_name} and staff_id {staff_id}")
@@ -422,10 +429,10 @@ def check_application():
 
         # If an application is found, return a JSON response indicating that an application exists
         if application:
-            return jsonify({"application_exists": True}), 200
+            return jsonify({"application_exists": True})
         # If no application is found, return a JSON response indicating that no application exists
         else:
-            return jsonify({"application_exists": False}), 400
+            return jsonify({"application_exists": False})
 
     except Exception as e:
         return jsonify({"error": str(e)})
