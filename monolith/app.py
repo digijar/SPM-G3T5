@@ -332,7 +332,7 @@ def delete_role_skill(role_name):
         # Commit the changes to the database
         db.session.commit()
 
-        return jsonify({'message': f'Successfully deleted Role_Skill entries for {role_name}'})
+        return jsonify({'message': f'Successfully deleted Role_Skill entries for {role_name}'}), 200
     except Exception as e:
         return jsonify({'error': str(e)})
 

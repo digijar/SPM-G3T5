@@ -220,6 +220,29 @@ def test_new_role_skill():
 #     data = response.get_json()
 #     assert f'Successfully deleted Role_Skill entries for {role_name}' in data["message"]
 
+# test 13 /delete_roleskill/<string:role_name>
+def test_delete_roleskill():
+    role_name = "testjaronrole12345"
+
+    # Check if the Role-Skill relationship exists
+    with app.app_context():
+        role_skill = Role_Skill.query.filter_by(Role_Name=role_name).first()
+
+    response_delete = client.delete(f'/delete_roleskill/{role_name}')
+
+    
+    assert response_delete.status_code == 200
+
+    role_skill_data = {
+        "roleName": role_name,
+        "skillName": role_skill.Skill_Name
+    }
+
+    response_post = client.post('/new_role_skill', json=role_skill_data)
+
+    # Check that the response for re-creation is successful
+    assert response_post.status_code == 200
+
 # test 14 /get_applications_data
 def test_get_applications_data():
     response = client.get('/get_applications_data')
