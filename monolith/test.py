@@ -68,6 +68,31 @@ def test_get_role_data():
 #     data = response.get_json()
 #     assert data["message"] == "Job listing created successfully"
 
+# test 6 /create_new_job_listing
+def test_create_new_job_listing_():
+    role_name = "testnewrole12345"
+
+    role_data = {
+        "roleName": role_name,
+        "roleDesc": "test create new job",
+        "dept": "HR",
+        "location": "On-Site",
+        "deadline": "2023-12-31",
+        "skills": "Account Management"
+    }
+
+    # Make a POST request to create the job listing
+    response = client.post('/create_new_job_listing', json=role_data)
+
+    # Check that the response is successful
+    assert response.status_code == 200
+
+    with app.app_context():
+        new_role = Role.query.filter_by(Role_Name=role_data["roleName"]).first()
+        if new_role:
+            db.session.delete(new_role)
+            db.session.commit()
+
 
 # test 7 /update_role/<role_name>
 # def test_update_role():
