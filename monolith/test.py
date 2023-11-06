@@ -108,6 +108,47 @@ def test_create_new_job_listing_():
 #     data = response.get_json()
 #     assert data["message"] == "Role updated successfully"
 
+# test 7 /update_role/<role_name>
+def test_update_role():
+    role_name = "testjaronrole12345"
+
+    # Define the updated data
+    updated_data = {
+        "Role_Desc": "Updated description",
+        "Location": "On-site",
+        "Dept": "HR",
+        "Deadline": "2024-01-01",
+        "Skills": ["Account Management", "Business Development"]
+    }
+
+    with app.app_context():
+        # Retrieve the current data for the role name
+        role = Role.query.get(role_name)
+        skill = Role_Skill.query.filter_by(Role_Name=role_name).first()
+
+        # Save the original data
+        original_data = {
+            "Role_Desc": role.Role_Desc,
+            "Location": role.Location,
+            "Dept": role.Dept,
+            "Deadline": str(role.Deadline),
+            "Skills": skill.Skill_Name
+        }
+
+        # Make a PUT request to update the role with the new data
+        response = client.put(f'/update_role/{role_name}', json=updated_data)
+        
+        # Check that the response is successful
+        assert response.status_code == 200
+
+        # Make another PUT request to revert to the original data
+        response_revert = client.put(f'/update_role/{role_name}', json=original_data)
+
+        # Check that the reversion response is also successful
+        assert response_revert.status_code == 200
+
+        db.session.commit()
+
 # test 8 /get_skill_data
 def test_get_skill_data():
     response = client.get('/get_skill_data')
