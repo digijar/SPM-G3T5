@@ -262,5 +262,17 @@ def test_same_role_name():
         })
     assert response.status_code == 500
 
+# test 24: Update role with invalid/missing data
+def test_update_role_missing():
+    role_name = "testrolename0"
+    role_data = {
+        "Dept": "HR",
+        "Location": "On-Site",
+        "Deadline": "2023-12-31"
+    }
+
+    response = client.put(f'/update_role/{role_name}', data=json.dumps(role_data), content_type='application/json')
+    assert response.status_code == 500
+
 if __name__ == '__main__':
     pytest.main()

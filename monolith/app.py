@@ -171,13 +171,26 @@ def update_role(role_name):
     if not role:
         return jsonify({'message': 'Role not found'}), 404
     
-    # Update the role details based on the data received
-    # role.Role_Name = data['Role_Name'] 
-    role.Role_Desc = data['Role_Desc']
-    # role.Skill_Name = data['Skill_Name']
-    role.Location = data['Location']
-    role.Dept = data['Dept']
-    role.Deadline = data['Deadline']
+    # Check if any data field is blank
+    if 'Role_Desc' in data and data['Role_Desc']:
+        role.Role_Desc = data['Role_Desc']
+    else:
+        return jsonify({'message': 'Role description cannot be blank'}), 500
+
+    if 'Location' in data and data['Location']:
+        role.Location = data['Location']
+    else:
+        return jsonify({'message': 'Location cannot be blank'}), 500
+
+    if 'Dept' in data and data['Dept']:
+        role.Dept = data['Dept']
+    else:
+        return jsonify({'message': 'Department cannot be blank'}), 500
+
+    if 'Deadline' in data and data['Deadline']:
+        role.Deadline = data['Deadline']
+    else:
+        return jsonify({'message': 'Deadline cannot be blank'}), 500
     
     db.session.commit()
     return jsonify({'message': 'Role updated successfully'}), 200
