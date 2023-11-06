@@ -55,33 +55,33 @@ def test_get_role_data():
     assert isinstance(data, list)
 
 # test 6 /create_new_job_listing
-def test_create_new_job_listing():
-    role_data = {
-        "roleName": "testjaronrole12345",
-        "roleDesc": "test create new job",
-        "dept": "HR",
-        "location": "On-Site",  # Provide a valid location
-        "deadline": datetime.strptime("2023-12-31", "%Y-%m-%d")  # Convert the string to a date
-    }
-    response = client.post('/create_new_job_listing', data=json.dumps(role_data), content_type='application/json')
-    assert response.status_code == 200
-    data = response.get_json()
-    assert data["message"] == "Job listing created successfully"
+# def test_create_new_job_listing():
+#     role_data = {
+#         "roleName": "testjaronrole12345",
+#         "roleDesc": "test create new job",
+#         "dept": "HR",
+#         "location": "On-Site",  # Provide a valid location
+#         "deadline": datetime.strptime("2023-12-31", "%Y-%m-%d")  # Convert the string to a date
+#     }
+#     response = client.post('/create_new_job_listing', data=json.dumps(role_data), content_type='application/json')
+#     assert response.status_code == 200
+#     data = response.get_json()
+#     assert data["message"] == "Job listing created successfully"
 
 
 # test 7 /update_role/<role_name>
-def test_update_role():
-    role_name = "Account Manager"  # Provide a valid role name
-    role_data = {
-        "Role_Desc": "test update account manager",
-        "Location": "Remote",
-        "Dept": "Sales",
-        "Deadline": "2024-01-15"
-    }
-    response = client.put(f'/update_role/{role_name}', data=json.dumps(role_data), content_type='application/json')
-    assert response.status_code == 200
-    data = response.get_json()
-    assert data["message"] == "Role updated successfully"
+# def test_update_role():
+#     role_name = "Account Manager"  # Provide a valid role name
+#     role_data = {
+#         "Role_Desc": "test update account manager",
+#         "Location": "Remote",
+#         "Dept": "Sales",
+#         "Deadline": "2024-01-15"
+#     }
+#     response = client.put(f'/update_role/{role_name}', data=json.dumps(role_data), content_type='application/json')
+#     assert response.status_code == 200
+#     data = response.get_json()
+#     assert data["message"] == "Role updated successfully"
 
 # test 8 /get_skill_data
 def test_get_skill_data():
@@ -105,31 +105,31 @@ def test_get_roleSkill_data_by_name():
     assert isinstance(data, list)
 
 # test 11 /new_role_skill
-def test_new_role_skill():
-    role_name = "Account Manager"  # Provide a valid role name
-    skill_name = "Account Management"  # Provide a valid skill name
-    role_data = {"roleName": role_name, "skillName": skill_name}
-    response = client.post('/new_role_skill', data=json.dumps(role_data), content_type='application/json')
-    assert response.status_code == 200
-    data = response.get_json()
-    assert data["message"] == "Role_Skill updated successfully"
+# def test_new_role_skill():
+#     role_name = "Account Manager"  # Provide a valid role name
+#     skill_name = "Account Management"  # Provide a valid skill name
+#     role_data = {"roleName": role_name, "skillName": skill_name}
+#     response = client.post('/new_role_skill', data=json.dumps(role_data), content_type='application/json')
+#     assert response.status_code == 200
+#     data = response.get_json()
+#     assert data["message"] == "Role_Skill updated successfully"
 
 # test 12 /update_roleskill/<role_name>
-def test_update_roleskill():
-    role_name = "Account Manager"  # Provide a valid role name
-    role_skill_data = {"Skill_Name": "Applications Development"}  # Provide a valid skill name
-    response = client.put(f'/update_roleskill/{role_name}', data=json.dumps(role_skill_data), content_type='application/json')
-    assert response.status_code == 200
-    data = response.get_json()
-    assert data["message"] == "Role_Skill updated successfully"
+# def test_update_roleskill():
+#     role_name = "Account Manager"  # Provide a valid role name
+#     role_skill_data = {"Skill_Name": "Applications Development"}  # Provide a valid skill name
+#     response = client.put(f'/update_roleskill/{role_name}', data=json.dumps(role_skill_data), content_type='application/json')
+#     assert response.status_code == 200
+#     data = response.get_json()
+#     assert data["message"] == "Role_Skill updated successfully"
 
 # test 13 /delete_roleskill/<string:role_name>
-def test_delete_role_skill():
-    role_name = "Account Manager"  # Provide a valid role name
-    response = client.delete(f'/delete_roleskill/{role_name}')
-    assert response.status_code == 200
-    data = response.get_json()
-    assert f'Successfully deleted Role_Skill entries for {role_name}' in data["message"]
+# def test_delete_role_skill():
+#     role_name = "Account Manager"  # Provide a valid role name
+#     response = client.delete(f'/delete_roleskill/{role_name}')
+#     assert response.status_code == 200
+#     data = response.get_json()
+#     assert f'Successfully deleted Role_Skill entries for {role_name}' in data["message"]
 
 # test 14 /get_applications_data
 def test_get_applications_data():

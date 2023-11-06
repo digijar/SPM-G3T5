@@ -157,6 +157,7 @@ def create_new_job_listing():
 
         return jsonify({"message": "Job listing created successfully"}), 200
     except Exception as e:
+        print("Error:", str(e))
         return jsonify({"error": str(e)}), 500
     
 @app.route('/update_role/<role_name>', methods=['PUT'])
