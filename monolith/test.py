@@ -144,7 +144,14 @@ def test_create_new_application():
         "current_dept": "IT",  # Provide a valid department name
         "skill_match": 85.0  # Provide a valid skill match percentage
     }
+
+    # Delete any existing application with the same role_name and staff_id
+    response_delete = client.delete(f"/delete_application?role_name={application_data['role_name']}&staff_id={application_data['staff_id']}")
+    assert response_delete.status_code in [200, 404]  # It's okay if the application didn't exist
+
+    # Ccreate a new application
     response = client.post('/create_new_application', data=json.dumps(application_data), content_type='application/json')
+    # print(response.get_json())  # Print the server response
     assert response.status_code == 200
     data = response.get_json()
     assert data["message"] == "Application created successfully"
@@ -188,6 +195,23 @@ def test_get_missing_skills():
     response = client.get(f'/get_missing_skills/{role_name}/{staff_id}')
     assert response.status_code == 200
     data = response.get_json()
+
+# test 20 G3T5-43TC3: Applications for the same role with the same staff ID will not be accepted
+def test_same_role_same_staff():
+    role_name = "testrolename0"
+    staff_id = 21044
+
+    # Check if an application has already been submitted
+    response1 = client.get(f"/check_application?role_name={role_name}&staff_id={staff_id}")
+    assert response1.status_code == 200
+    data1 = response1.get_json()
+
+    # If an application has been submitted, the system should not accept a second application
+    if data1["application_exists"]:
+        response2 = client.post(f"/submit_application/{role_name}/{staff_id}")
+        assert response2.status_code == 400  # Assuming 400 is the status code for a bad request
+        assert "Applications for the same role with the same staff ID will not be accepted" in response2.get_json()["message"]
+    
 
 if __name__ == '__main__':
     pytest.main()
