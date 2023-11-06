@@ -70,14 +70,14 @@ def test_get_role_data():
 
 # test 6 /create_new_job_listing
 def test_create_new_job_listing_():
-    role_name = "testnewrole12345"
+    role_name = "testcreatenewrolename"
 
     role_data = {
         "roleName": role_name,
-        "roleDesc": "test create new job",
+        "roleDesc": "sample",
         "dept": "HR",
-        "location": "On-Site",
-        "deadline": "2023-12-31",
+        "location": "Remote",
+        "deadline": "2023-11-16",
         "skills": "Account Management"
     }
 
@@ -110,15 +110,15 @@ def test_create_new_job_listing_():
 
 # test 7 /update_role/<role_name>
 def test_update_role():
-    role_name = "testjaronrole12345"
+    role_name = "Finance Director"
 
     # Define the updated data
     updated_data = {
-        "Role_Desc": "Updated description",
+        "Role_Desc": "Sample updated description",
         "Location": "On-site",
-        "Dept": "HR",
+        "Dept": "Finance",
         "Deadline": "2024-01-01",
-        "Skills": ["Account Management", "Business Development"]
+        "Skills": ["Financial Planning", "Financial Reporting"]
     }
 
     with app.app_context():
@@ -348,7 +348,7 @@ def test_create_new_job_listing_missing():
 
 # test 23: Create new job listing with an existing role name
 def test_same_role_name():
-    role_name = "testrolename0"
+    role_name = "Finance Director"
 
     response = client.post("/create_new_job_listing", json={
             "roleName": role_name,
@@ -357,10 +357,10 @@ def test_same_role_name():
 
 # test 24: Update role with invalid/missing data
 def test_update_role_missing():
-    role_name = "testrolename0"
+    role_name = "Finance Director"
     role_data = {
-        "Dept": "HR",
-        "Location": "On-Site",
+        "Dept": "Finance",
+        "Location": "Remote",
         "Deadline": "2023-12-31"
     }
 
