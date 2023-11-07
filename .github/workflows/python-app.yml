@@ -37,6 +37,9 @@ jobs:
     - name: Run unit tests
       run: |
         pytest monolith/test.py
+    - name: Run code linting
+      run: |
+        pylint monolith/app.py
     # - name: Run integration tests
     #   run: |
     #     python flask/integration_tests.py
